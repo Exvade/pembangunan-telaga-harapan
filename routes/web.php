@@ -7,10 +7,22 @@ use App\Http\Controllers\Admin\BudgetController as AdminBudgetController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\IncomeController as AdminIncomeController;
 use App\Http\Controllers\Admin\ExpenseController as AdminExpenseController;
+use App\Http\Controllers\Public\SiteController;
+use App\Http\Controllers\Public\NewsController as PublicNewsController;
+
 
 
 // Redirect root sementara ke login (boleh diubah nanti)
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', [SiteController::class, 'home'])->name('public.home');
+
+Route::get('/berita', [PublicNewsController::class, 'index'])->name('public.news.index');
+Route::get('/berita/{slug}', [PublicNewsController::class, 'show'])->name('public.news.show');
+
+Route::get('/transparansi', [SiteController::class, 'transparency'])->name('public.transparency');
+Route::get('/transparansi/kategori/{category}', [SiteController::class, 'categoryShow'])->name('public.category.show');
+// catatan: {category} akan by default binding ke ID (int). Boleh pakai id dulu untuk simpel.
+
+Route::view('/tentang', 'public.about')->name('public.about');
 
 // Auth routes dari Breeze sudah otomatis tersedia (login, logout, dll)
 Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))->name('dashboard');
