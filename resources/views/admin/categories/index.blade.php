@@ -58,9 +58,8 @@
                                 $target = $it->target_amount ?? 0;
                                 $progress = $target > 0 ? min(100, ($in / $target) * 100) : 0;
                             @endphp
-                            {{-- Tambahkan class "group" di <tr> untuk trigger hover --}}
-                            <tr class="group">
-                                <td class="p-4">
+                            <tr>
+                                <td class="p-4 align-top">
                                     <div class="font-medium text-slate-800">{{ $it->name }}</div>
                                     <div class="mt-1">
                                         <span
@@ -69,7 +68,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td class="p-4">
+                                <td class="p-4 align-top">
                                     @if ($target > 0)
                                         <div class="flex items-center gap-2">
                                             <div class="w-full bg-slate-200 rounded-full h-2">
@@ -85,19 +84,19 @@
                                         <span class="text-xs text-slate-500">—</span>
                                     @endif
                                 </td>
-                                <td class="p-4 text-right font-medium text-emerald-600">Rp
+                                <td class="p-4 text-right align-top font-medium text-emerald-600">Rp
                                     {{ number_format($in, 0, ',', '.') }}</td>
-                                <td class="p-4 text-right font-medium text-rose-600">Rp
+                                <td class="p-4 text-right align-top font-medium text-rose-600">Rp
                                     {{ number_format($ex, 0, ',', '.') }}</td>
-                                <td class="p-4 text-right font-bold {{ $bal < 0 ? 'text-rose-600' : 'text-slate-800' }}">Rp
-                                    {{ number_format($bal, 0, ',', '.') }}</td>
-                                <td class="p-4">
-                                    {{-- Tombol aksi ini akan muncul saat <tr> di-hover --}}
-                                    <div
-                                        class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity md:opacity-0">
+                                <td
+                                    class="p-4 text-right align-top font-bold {{ $bal < 0 ? 'text-rose-600' : 'text-slate-800' }}">
+                                    Rp {{ number_format($bal, 0, ',', '.') }}</td>
+                                <td class="p-4 align-top">
+                                    {{-- Grup tombol ikon yang selalu terlihat --}}
+                                    <div class="flex items-center justify-end gap-1">
                                         <a href="{{ route('admin.incomes.create') }}?category_id={{ $it->id }}"
                                             title="Tambah Pemasukan"
-                                            class="p-2 rounded-full text-slate-500 hover:bg-emerald-50 hover:text-emerald-600">
+                                            class="p-2 rounded-full text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path fill-rule="evenodd"
@@ -107,7 +106,7 @@
                                         </a>
                                         <a href="{{ route('admin.expenses.create') }}?category_id={{ $it->id }}"
                                             title="Tambah Pengeluaran"
-                                            class="p-2 rounded-full text-slate-500 hover:bg-orange-50 hover:text-orange-600">
+                                            class="p-2 rounded-full text-slate-500 hover:bg-orange-50 hover:text-orange-600 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path fill-rule="evenodd"
@@ -116,7 +115,7 @@
                                             </svg>
                                         </a>
                                         <a href="{{ route('admin.categories.edit', $it) }}" title="Edit Kategori"
-                                            class="p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700">
+                                            class="p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path
@@ -129,8 +128,8 @@
                                         <form method="POST" action="{{ route('admin.categories.destroy', $it) }}"
                                             onsubmit="return confirm('Anda yakin ingin menghapus kategori ini?')">
                                             @csrf @method('DELETE')
-                                            <button title="Hapus Kategori"
-                                                class="p-2 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600">
+                                            <button type="submit" title="Hapus Kategori"
+                                                class="p-2 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
                                                     fill="currentColor">
                                                     <path fill-rule="evenodd"
