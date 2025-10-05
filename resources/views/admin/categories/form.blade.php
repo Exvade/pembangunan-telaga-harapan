@@ -26,7 +26,7 @@
                             <div>
                                 <label for="name" class="block text-sm font-semibold mb-1 text-slate-700">Nama</label>
                                 <input id="name" name="name" value="{{ old('name', $item->name) }}" required
-                                    class="w-full border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                                    class="w-full border-2 border-slate-200 rounded-lg text-sm p-2 focus:outline-none focus:border-indigo-500 transition"
                                     placeholder="Contoh: Pembangunan Masjid, Santunan Yatim, dll.">
                                 @error('name')
                                     <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
@@ -38,7 +38,7 @@
                                 <label for="description" class="block text-sm font-semibold mb-1 text-slate-700">Deskripsi
                                     (opsional)</label>
                                 <textarea id="description" name="description" rows="4"
-                                    class="w-full border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                                    class="w-full border-2 border-slate-200 rounded-lg text-sm p-2 focus:outline-none focus:border-indigo-500 transition"
                                     placeholder="Jelaskan secara singkat tujuan dari kategori atau rencana ini.">{{ old('description', $item->description) }}</textarea>
                             </div>
                         </div>
@@ -57,26 +57,28 @@
                             </div>
                             <input type="number" name="target_amount" id="target_amount" min="0"
                                 value="{{ old('target_amount', $item->target_amount) }}"
-                                class="w-full border-slate-300 rounded-lg text-sm pl-8 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                                class="w-full border-2 border-slate-200 rounded-lg text-sm p-2 pl-8 focus:outline-none focus:border-indigo-500 transition"
                                 placeholder="0">
                         </div>
                     </div>
 
                     {{-- Kotak Status --}}
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        {{-- Komponen Toggle Switch dengan Alpine.js --}}
                         <div x-data="{ on: @json(old('is_active', $item->is_active ?? true)) }" class="flex items-center justify-between">
-                            <label for="is_active" class="block text-sm font-semibold text-slate-700">Status</label>
+                            <span class="flex-grow flex flex-col">
+                                <span class="text-sm font-semibold text-slate-700" id="status-label">Status</span>
+                                <span class="text-xs text-slate-500" id="status-description"
+                                    x-text="on ? 'Aktif' : 'Diarsipkan'"></span>
+                            </span>
                             <input type="hidden" name="is_active" :value="on ? 1 : 0">
                             <button type="button" @click="on = !on" :class="on ? 'bg-indigo-600' : 'bg-slate-200'"
                                 class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                role="switch" :aria-checked="on.toString()">
+                                role="switch" :aria-checked="on.toString()" aria-labelledby="status-label"
+                                aria-describedby="status-description">
                                 <span :class="on ? 'translate-x-5' : 'translate-x-0'"
                                     class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                             </button>
                         </div>
-                        <p class="text-xs text-slate-500 mt-2">Pilih apakah kategori ini 'Aktif' dan bisa menerima
-                            transaksi, atau 'Arsip'.</p>
                     </div>
 
                     {{-- Tombol Aksi --}}
@@ -84,7 +86,7 @@
                         <button type="submit" :disabled="isSubmitting"
                             class="w-full inline-flex justify-center items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
                             <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor"
@@ -94,7 +96,7 @@
                             <span>{{ $item->exists ? 'Simpan Perubahan' : 'Simpan' }}</span>
                         </button>
                         <a href="{{ route('admin.categories.index') }}"
-                            class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-center font-semibold bg-white hover:bg-slate-50 transition-colors">Batal</a>
+                            class="w-full px-4 py-2 border-2 border-slate-200 rounded-lg text-sm text-center font-semibold bg-white hover:bg-slate-50 transition-colors">Batal</a>
                     </div>
                 </div>
 
