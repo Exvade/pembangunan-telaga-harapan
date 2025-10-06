@@ -5,7 +5,7 @@
         {{-- === Header (Tetap Sama) === --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-                Kategori / Rencana
+                Rencana Pembangunan
             </h1>
             <div class="mt-3 sm:mt-0 flex items-center gap-4">
                 <form method="GET" class="relative">
