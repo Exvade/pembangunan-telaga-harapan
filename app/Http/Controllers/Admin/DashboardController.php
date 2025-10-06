@@ -11,67 +11,36 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // === Angka utama (all time) ===
-        $totalIn = (int) Income::sum('amount');
-        $totalEx = (int) Expense::sum('amount');
+        $totalIn = (int) \App\Models\Income::sum('amount');
+        $totalEx = (int) \App\Models\Expense::sum('amount');
         $saldo   = $totalIn - $totalEx;
 
-        // === Bulan berjalan ===
-        $now       = Carbon::now();
+        $now       = \Illuminate\Support\Carbon::now();
         $monthFrom = $now->copy()->startOfMonth()->toDateString();
         $monthTo   = $now->copy()->endOfMonth()->toDateString();
 
-        $monthIn = (int) Income::whereBetween('date', [$monthFrom, $monthTo])->sum('amount');
-        $monthEx = (int) Expense::whereBetween('date', [$monthFrom, $monthTo])->sum('amount');
+        $monthIn   = (int) \App\Models\Income::whereBetween('date', [$monthFrom, $monthTo])->sum('amount');
+        $monthEx   = (int) \App\Models\Expense::whereBetween('date', [$monthFrom, $monthTo])->sum('amount');
         $monthSaldo = $monthIn - $monthEx;
 
-        // === Rekap per kategori (untuk table "Top Kategori") ===
-        // pakai withSum biar efisien
-        $categoryStats = Category::select('id','name','target_amount','is_active')
-            ->withSum('incomes as total_income', 'amount')
-            ->withSum('expenses as total_expense', 'amount')
-            ->get()
-            ->map(function ($c) {
-                $in = (int) ($c->total_income ?? 0);
-                $ex = (int) ($c->total_expense ?? 0);
-                $target = (int) ($c->target_amount ?? 0);
-                return [
-                    'id'            => $c->id,
-                    'name'          => $c->name,
-                    'is_active'     => (bool) $c->is_active,
-                    'target_amount' => $target,
-                    'total_income'  => $in,
-                    'total_expense' => $ex,
-                    'balance'       => $in - $ex,
-                    'target_pct'    => $target > 0 ? round(($in / $target) * 100) : null,
-                ];
-            });
-
-        // Urutan: pengeluaran terbesar bulan ini (untuk mendeteksi kategori paling aktif)
-        $monthTopExpense = Expense::selectRaw('category_id, SUM(amount) as total')
+        // TOP pengeluaran per kategori (bulan ini)
+        $topExpenseThisMonth = \App\Models\Expense::selectRaw('category_id, SUM(amount) as total')
             ->whereBetween('date', [$monthFrom, $monthTo])
             ->groupBy('category_id')
             ->orderByDesc('total')
             ->limit(5)
-            ->pluck('total','category_id')
-            ->toArray();
-
-        // Ambil 5 kategori dengan saldo terbesar (positif)
-        $topBalance = $categoryStats->sortByDesc('balance')->take(5)->values();
-
-        // Hit-list kategori dengan expense terbanyak bulan ini (gabungkan nama + total)
-        $topExpenseThisMonth = collect($monthTopExpense)
-            ->map(function ($total, $categoryId) use ($categoryStats) {
-                $cat = $categoryStats->firstWhere('id', (int)$categoryId);
+            ->get()
+            ->map(function ($row) {
+                $cat = \App\Models\Category::find($row->category_id);
                 return [
-                    'id'    => (int)$categoryId,
-                    'name'  => $cat['name'] ?? 'Tidak diketahui',
-                    'total' => (int)$total,
+                    'id'    => (int) $row->category_id,
+                    'name'  => $cat?->name ?? 'Tidak diketahui',
+                    'total' => (int) $row->total,
                 ];
-            })->values();
+            });
 
-        // === Transaksi terbaru (campur pemasukan & pengeluaran) ===
-        $latestIncomes = Income::with('category')->latest('date')->limit(5)->get()->map(function ($x) {
+        // Transaksi terbaru (campur pemasukan & pengeluaran)
+        $latestIncomes = \App\Models\Income::with('category')->latest('date')->limit(5)->get()->map(function ($x) {
             return [
                 'type'       => 'income',
                 'date'       => $x->date,
@@ -82,7 +51,7 @@ class DashboardController extends Controller
             ];
         });
 
-        $latestExpenses = Expense::with('category')->latest('date')->limit(5)->get()->map(function ($x) {
+        $latestExpenses = \App\Models\Expense::with('category')->latest('date')->limit(5)->get()->map(function ($x) {
             return [
                 'type'       => 'expense',
                 'date'       => $x->date,
@@ -93,33 +62,23 @@ class DashboardController extends Controller
             ];
         });
 
-        /** @var Collection $latestTransactions */
         $latestTransactions = $latestIncomes->merge($latestExpenses)
-            ->sortByDesc('date')
-            ->take(8)
-            ->values();
+            ->sortByDesc('date')->take(8)->values();
 
-        // (Opsional) jumlah berita publish, kalau mau tampilkan
-        $newsPublished = class_exists(News::class)
-            ? (int) News::where('status','published')->count()
+        $newsPublished = class_exists(\App\Models\News::class)
+            ? (int) \App\Models\News::where('status', 'published')->count()
             : 0;
 
         return view('admin.dashboard', [
-            // all-time
             'totalIn'   => $totalIn,
             'totalEx'   => $totalEx,
             'saldo'     => $saldo,
-            // month-to-date
             'monthIn'   => $monthIn,
             'monthEx'   => $monthEx,
-            'monthSaldo'=> $monthSaldo,
-            'monthText' => $now->translatedFormat('F Y'), // e.g. "Oktober 2025"
-            // kategori
-            'topBalance'         => $topBalance,
-            'topExpenseThisMonth'=> $topExpenseThisMonth,
-            // transaksi terbaru
+            'monthSaldo' => $monthSaldo,
+            'monthText' => $now->translatedFormat('F Y'),
+            'topExpenseThisMonth' => $topExpenseThisMonth,
             'latestTransactions' => $latestTransactions,
-            // opsional
             'newsPublished'      => $newsPublished,
         ]);
     }

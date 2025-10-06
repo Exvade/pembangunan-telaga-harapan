@@ -11,87 +11,67 @@ class SiteController extends Controller
 {
     public function home()
     {
-        $latestNews = News::where('status','published')
+        $latestNews = News::where('status', 'published')
             ->latest('published_at')->limit(3)->get();
 
         $totalIn = (int) Income::sum('amount');
         $totalEx = (int) Expense::sum('amount');
         $saldo   = $totalIn - $totalEx;
 
-        return view('public.home', compact('latestNews','totalIn','totalEx','saldo'));
+        return view('public.home', compact('latestNews', 'totalIn', 'totalEx', 'saldo'));
     }
 
-    public function transparency(Request $r)
+    public function transparency(\Illuminate\Http\Request $r)
     {
-        $categories = Category::select('id','name','description','target_amount','is_active')
-            ->withSum('incomes as total_income','amount')
-            ->withSum('expenses as total_expense','amount')
-            ->orderBy('is_active','desc')
+        $totalIncome  = (int) \App\Models\Income::sum('amount');
+        $totalExpense = (int) \App\Models\Expense::sum('amount');
+        $balance      = $totalIncome - $totalExpense;
+
+        // total pengeluaran per kategori
+        $categories = \App\Models\Category::select('id', 'name', 'description', 'is_active')
+            ->withSum('expenses as total_expense', 'amount')
+            ->orderBy('is_active', 'desc')
             ->orderBy('name')
             ->get()
-            ->map(function($c){
-                $in = (int)($c->total_income ?? 0);
-                $ex = (int)($c->total_expense ?? 0);
+            ->map(function ($c) {
                 return [
-                    'id' => $c->id,
-                    'name' => $c->name,
-                    'description' => $c->description,
-                    'target_amount' => (int)($c->target_amount ?? 0),
-                    'is_active' => (bool)$c->is_active,
-                    'total_income' => $in,
-                    'total_expense' => $ex,
-                    'balance' => $in - $ex,
-                    'target_pct' => ($c->target_amount ?? 0) > 0
-                        ? round($in / $c->target_amount * 100)
-                        : null,
+                    'id'            => $c->id,
+                    'name'          => $c->name,
+                    'description'   => $c->description,
+                    'is_active'     => (bool)$c->is_active,
+                    'total_expense' => (int) ($c->total_expense ?? 0),
                 ];
             });
 
-        $global = [
-            'total_income' => (int) Income::sum('amount'),
-            'total_expense'=> (int) Expense::sum('amount'),
-        ];
-        $global['balance'] = $global['total_income'] - $global['total_expense'];
+        // total semua pengeluaran untuk hitung persentase kategori
+        $grandExpense = max(1, (int) \App\Models\Expense::sum('amount')); // hindari bagi 0
 
-        return view('public.transparency.index', compact('categories','global'));
+        // hitung persentase
+        $categories = $categories->map(function ($c) use ($grandExpense) {
+            $c['share_pct'] = round(($c['total_expense'] / $grandExpense) * 100);
+            return $c;
+        });
+
+        $global = [
+            'total_income'  => $totalIncome,
+            'total_expense' => $totalExpense,
+            'balance'       => $balance,
+        ];
+
+        return view('public.transparency.index', compact('categories', 'global'));
     }
 
-    public function categoryShow(Category $category, Request $r)
+
+    public function categoryShow(\App\Models\Category $category, \Illuminate\Http\Request $r)
     {
-        // daftar transaksi terbaru (campur pemasukan & pengeluaran)
-        $incomes = $category->incomes()->latest('date')->limit(10)->get()->map(function($x){
-            return [
-                'type' => 'income',
-                'date' => $x->date,
-                'label'=> $x->source ?: 'Pemasukan',
-                'amount'=>(int)$x->amount,
-                'attachment'=>$x->attachment_path,
-            ];
-        });
-        $expenses = $category->expenses()->latest('date')->limit(10)->get()->map(function($x){
-            return [
-                'type' => 'expense',
-                'date' => $x->date,
-                'label'=> $x->description,
-                'amount'=>(int)$x->amount,
-                'attachment'=>$x->attachment_path,
-                'unit'=>$x->unit_label,
-            ];
-        });
+        $expenses = $category->expenses()->latest('date')->paginate(15);
 
-        $transactions = $incomes->merge($expenses)->sortByDesc('date')->values();
+        $totalExpense = (int) $category->expenses()->sum('amount');
 
-        $summary = [
-            'total_income'  => (int) $category->incomes()->sum('amount'),
-            'total_expense' => (int) $category->expenses()->sum('amount'),
-            'target_amount' => (int) ($category->target_amount ?? 0),
-            'is_active'     => (bool) $category->is_active,
-        ];
-        $summary['balance'] = $summary['total_income'] - $summary['total_expense'];
-        $summary['target_pct'] = $summary['target_amount'] > 0
-            ? round($summary['total_income'] / $summary['target_amount'] * 100)
-            : null;
-
-        return view('public.transparency.show', compact('category','summary','transactions'));
+        return view('public.transparency.show', [
+            'category'      => $category,
+            'totalExpense'  => $totalExpense,
+            'expenses'      => $expenses,
+        ]);
     }
 }
