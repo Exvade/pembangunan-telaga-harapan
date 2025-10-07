@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+     
     <title>@yield('title', 'Telaga Harapan')</title>
     
     {{-- Alpine.js untuk interaktivitas menu mobile --}}
@@ -22,7 +23,7 @@
                 <div class="flex items-center justify-between h-16">
                     {{-- Logo / Nama Brand --}}
                     <a href="{{ route('public.home') }}" class="text-lg font-bold text-slate-800">
-                        Telaga Harapan
+                        Team Pembangunan Telaga Harapan
                     </a>
 
                     {{-- Navigasi Desktop --}}
@@ -35,9 +36,6 @@
                         </a>
                         <a href="{{ route('public.transparency') }}" @class(['px-3 py-2 rounded-lg transition-colors', 'bg-slate-100 text-slate-900' => request()->routeIs('public.transparency'), 'text-slate-600 hover:bg-slate-100/75 hover:text-slate-900'])>
                             Transparansi
-                        </a>
-                         <a href="#tentang-kami" class="px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-100/75 hover:text-slate-900">
-                            Tentang
                         </a>
                     </nav>
 
@@ -57,7 +55,6 @@
                     <a href="{{ route('public.home') }}" @class(['px-3 py-2 rounded-lg', 'bg-slate-100 text-slate-900 font-semibold' => request()->routeIs('public.home'), 'text-slate-600'])>Beranda</a>
                     <a href="{{ route('public.news.index') }}" @class(['px-3 py-2 rounded-lg', 'bg-slate-100 text-slate-900 font-semibold' => request()->routeIs('public.news.*'), 'text-slate-600'])>Berita</a>
                     <a href="{{ route('public.transparency') }}" @class(['px-3 py-2 rounded-lg', 'bg-slate-100 text-slate-900 font-semibold' => request()->routeIs('public.transparency'), 'text-slate-600'])>Transparansi</a>
-                    <a href="#tentang-kami" class="px-3 py-2 rounded-lg text-slate-600">Tentang</a>
                 </nav>
             </div>
         </header>
@@ -72,7 +69,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {{-- Kolom 1: Tentang --}}
                     <div class="md:col-span-2">
-                        <h4 class="text-lg font-bold text-white mb-2">Telaga Harapan</h4>
+                        <h4 class="text-lg font-bold text-white mb-2"> Team Pembangunan Telaga Harapan</h4>
                         <p class="text-sm max-w-md">
                            Inisiatif pembangunan pusat komunitas dan peribadatan untuk kemaslahatan bersama. Transparansi dan kolaborasi adalah pilar utama kami.
                         </p>
@@ -85,7 +82,6 @@
                             <li><a href="{{ route('public.home') }}" class="hover:text-white">Beranda</a></li>
                             <li><a href="{{ route('public.news.index') }}" class="hover:text-white">Berita</a></li>
                             <li><a href="{{ route('public.transparency') }}" class="hover:text-white">Transparansi</a></li>
-                             <li><a href="#tentang-kami" class="hover:text-white">Tentang</a></li>
                         </ul>
                     </div>
 
