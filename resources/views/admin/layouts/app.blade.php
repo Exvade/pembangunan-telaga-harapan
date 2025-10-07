@@ -12,7 +12,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen">
     {{-- Use Alpine.js to manage the mobile menu state --}}
     <div x-data="{ open: false }">
         <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">

@@ -43,41 +43,45 @@
                         <tr>
                             <th class="text-left font-semibold text-slate-500 uppercase tracking-wider p-4">Judul</th>
                             <th class="text-left font-semibold text-slate-500 uppercase tracking-wider p-4">Status</th>
-                            <th class="text-left font-semibold text-slate-500 uppercase tracking-wider p-4">Tanggal Publish
-                            </th>
+                            <th class="text-left font-semibold text-slate-500 uppercase tracking-wider p-4">Tanggal Publish</th>
                             <th class="text-right font-semibold text-slate-500 uppercase tracking-wider p-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($items as $it)
+                            @php
+                                $coverUrl = $it->cover_path
+                                    ? \Illuminate\Support\Facades\Storage::url($it->cover_path)
+                                    : null;
+                            @endphp
                             <tr class="hover:bg-slate-50/50">
                                 <td class="p-4">
                                     <div class="flex items-center gap-4">
-                                        {{-- Ganti 'path/to/default.jpg' dengan placeholder Anda --}}
-                                        <img src="{{ $it->thumbnail ? Storage::url($it->thumbnail) : asset('path/to/default.jpg') }}"
-                                            alt="{{ $it->title }}"
-                                            class="h-12 w-16 object-cover rounded-md flex-shrink-0">
+                                        @if($coverUrl)
+                                            <img src="{{ $coverUrl }}" alt="{{ $it->title }}"
+                                                 class="h-12 w-16 object-cover rounded-md flex-shrink-0">
+                                        @else
+                                            <div class="h-12 w-16 bg-slate-200 rounded-md flex items-center justify-center text-[10px] text-slate-500 flex-shrink-0">
+                                                No Image
+                                            </div>
+                                        @endif
                                         <div>
                                             <div class="font-medium text-slate-800">{{ $it->title }}</div>
-                                            <div class="text-xs text-slate-500 mt-1">Dibuat:
-                                                {{ $it->created_at->format('d M Y') }}</div>
+                                            <div class="text-xs text-slate-500 mt-1">Dibuat: {{ $it->created_at->format('d M Y') }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="p-4">
                                     @if ($it->status === 'published')
-                                        <span
-                                            class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                                             Published
                                         </span>
                                     @elseif ($it->status === 'draft')
-                                        <span
-                                            class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
                                             Draft
                                         </span>
                                     @else
-                                        <span
-                                            class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                                             {{ ucfirst($it->status) }}
                                         </span>
                                     @endif
@@ -89,27 +93,19 @@
                                     <div class="flex items-center justify-end gap-2">
                                         {{-- Tombol Edit --}}
                                         <a href="{{ route('admin.news.edit', $it) }}"
-                                            class="p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                fill="currentColor">
-                                                <path
-                                                    d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                                <path fill-rule="evenodd"
-                                                    d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                                    clip-rule="evenodd" />
+                                           class="p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
                                             </svg>
                                         </a>
                                         {{-- Tombol Hapus --}}
                                         <form method="POST" action="{{ route('admin.news.destroy', $it) }}"
-                                            onsubmit="return confirm('Anda yakin ingin menghapus berita ini?')">
+                                              onsubmit="return confirm('Anda yakin ingin menghapus berita ini?')">
                                             @csrf @method('DELETE')
-                                            <button
-                                                class="p-2 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
-                                                    fill="currentColor">
-                                                    <path fill-rule="evenodd"
-                                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
+                                            <button class="p-2 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                                 </svg>
                                             </button>
                                         </form>
@@ -120,8 +116,7 @@
                             <tr>
                                 <td class="p-8 text-center text-slate-500" colspan="4">
                                     Belum ada berita.
-                                    <a href="{{ route('admin.news.create') }}"
-                                        class="text-indigo-600 font-medium hover:underline ml-2">Buat Sekarang</a>
+                                    <a href="{{ route('admin.news.create') }}" class="text-indigo-600 font-medium hover:underline ml-2">Buat Sekarang</a>
                                 </td>
                             </tr>
                         @endforelse
