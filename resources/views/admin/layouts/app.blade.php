@@ -12,6 +12,72 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- ====== Scrollbar styling (opsional) ====== -->
+<style>
+  /* ====== THEME VARIABLES (auto ikut dark mode Tailwind .dark) ====== */
+  :root{
+    --sb-track: #f1f5f9;      /* slate-100 */
+    --sb-thumb: #cbd5e1;      /* slate-300 */
+    --sb-thumb-hover:#a8b4c3; /* slate-400-ish */
+    --sb-thumb-active:#94a3b8;/* slate-400 */
+  }
+  .dark{
+    --sb-track: rgba(255,255,255,.06);
+    --sb-thumb: rgba(255,255,255,.28);
+    --sb-thumb-hover: rgba(255,255,255,.38);
+    --sb-thumb-active: rgba(255,255,255,.48);
+  }
+
+  /* ====== BASE AREA ====== */
+  .scroll-area{
+    /* Firefox */
+    scrollbar-width: thin;                    /* auto/thin/none */
+    scrollbar-color: var(--sb-thumb) transparent;
+  }
+  /* WebKit family */
+  .scroll-area::-webkit-scrollbar{
+    width: 10px; height: 10px;
+  }
+
+  /* ====== VARIANT: SLIM + ROUNDED + INSET TRACK ====== */
+  .scroll-slim::-webkit-scrollbar-track{
+    background: var(--sb-track);
+    border-radius: 9999px;
+    margin-block: .25rem; /* kasih ruang atas-bawah */
+  }
+  .scroll-slim::-webkit-scrollbar-thumb{
+    background: var(--sb-thumb);
+    border-radius: 9999px;
+    border: 2px solid transparent;   /* bikin “inset” */
+    background-clip: padding-box;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18);
+  }
+  @media (hover:hover){
+    .scroll-area:hover::-webkit-scrollbar-thumb{ background: var(--sb-thumb-hover); }
+  }
+  .scroll-area::-webkit-scrollbar-thumb:active{ background: var(--sb-thumb-active); }
+
+  /* Track corner (biar nggak kotak di pojok) */
+  .scroll-area::-webkit-scrollbar-corner{ background: transparent; }
+
+  /* ====== OPTIONAL: OVERLAY STYLE (track transparan) ======
+     Pakai class .scroll-overlay kalau mau tanpa track terlihat */
+  .scroll-overlay::-webkit-scrollbar-track{ background: transparent; }
+
+  /* ====== OPTIONAL: KONTRAS LEBIH TINGGI ======
+     Tambahkan .scroll-contrast kalau thumb perlu lebih kelihatan */
+  .scroll-contrast::-webkit-scrollbar-thumb{
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / .08), 0 1px 2px rgb(0 0 0 / .06);
+  }
+
+  /* ====== ACCESSIBILITY ====== */
+  .scroll-focus:focus-visible{
+    outline: 2px solid #2563eb; /* indigo-600 */
+    outline-offset: 2px;
+    border-radius: .5rem;
+  }
+</style>
+
 </head>
 
 <body class="bg-slate-50 min-h-screen">
