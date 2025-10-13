@@ -95,12 +95,16 @@
     {{-- Alpine.js state untuk menu mobile --}}
     <div x-data="{ mobileMenuOpen: false }">
         {{-- HEADER MODERN --}}
-        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200">
+        <header class="bg-white sticky top-0 z-50 border-b border-slate-200">
             <div class="container mx-auto px-4">
                 <div class="flex items-center justify-between h-16">
                     {{-- Logo / Nama Brand --}}
-                    <a href="{{ route('public.home') }}" class="text-lg font-bold text-slate-800">
-                        Team Pembangunan Telaga Harapan
+                    <a href="{{ route('public.home') }}"
+                        class="text-lg font-bold text-slate-800 flex justify-center items-center gap-2">
+                        {{-- Team Pembangunan Telaga Harapan --}}
+                        <img src="/logo.jpeg" class="w-12" alt="Logo Team Pembangunan Telaga Harapan">
+                        <span class="text-blue-800 font-bold">Team <span
+                                class="text-orange-700">Pembangunan</span></span>
                     </a>
 
                     {{-- Navigasi Desktop --}}
@@ -182,6 +186,7 @@
                     {{-- Kolom 1: Tentang --}}
                     <div class="md:col-span-2">
                         <h4 class="text-lg font-bold text-white mb-2"> Team Pembangunan Telaga Harapan</h4>
+
                         <p class="text-sm max-w-md">
                             Inisiatif pembangunan pusat komunitas dan peribadatan untuk kemaslahatan bersama.
                             Transparansi dan kolaborasi adalah pilar utama kami.

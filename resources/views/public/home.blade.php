@@ -94,9 +94,9 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                 <!-- Kolase gambar -->
                 <div class="relative w-full">
-                    <img src="/images/visi-misi/hero-a.jpg" alt="Proyek infrastruktur"
+                    <img src="/misi1.jpg" alt="Proyek infrastruktur"
                         class="w-full aspect-[16/9] object-cover rounded-2xl shadow-xl" />
-                    <img src="/images/visi-misi/hero-b.jpg" alt="Instalasi EPC"
+                    <img src="/misi2.jpeg" alt="Instalasi EPC"
                         class="absolute right-6 -bottom-10 w-1/2 aspect-[4/3] object-cover rounded-2xl shadow-xl hidden sm:block" />
                     <div class="h-10 sm:h-14"></div>
                 </div>
