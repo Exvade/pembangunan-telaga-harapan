@@ -12,79 +12,70 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* ===== Brand & Theme ===== */
+        /* ===== Pengaturan Warna Scrollbar ===== */
         :root {
             --brand: #298c47;
-            /* hijau brand */
-            --sb-track: #E8F5EE;
-            /* track hijau muda */
-            --sb-thumb: #7BD09B;
-            /* thumb normal */
-            --sb-thumb-hover: #4FB976;
-            /* hover */
-            --sb-thumb-active: #298c47;
-            /* active / pressed */
+            /* Warna utama untuk focus ring */
+            --sb-track-color: #E8F5EE;
+            /* Warna latar (track) scrollbar */
+            --sb-thumb-color: #7BD09B;
+            /* Warna gagang (thumb) scrollbar */
+            --sb-thumb-hover-color: #4FB976;
+            /* Warna gagang saat di-hover */
         }
 
+        /* Versi Dark Mode (jika ada) */
         .dark {
-            --sb-track: rgba(41, 140, 71, .12);
-            --sb-thumb: rgba(123, 208, 155, .9);
-            --sb-thumb-hover: rgba(79, 185, 118, .95);
-            --sb-thumb-active: #3aa35c;
+            --sb-track-color: rgba(41, 140, 71, .12);
+            --sb-thumb-color: rgba(123, 208, 155, .9);
+            --sb-thumb-hover-color: #3aa35c;
         }
 
-        /* ===== Base area (Firefox + WebKit) ===== */
+        /* ===== Styling Scrollbar ===== */
+
+        /* 1. Target elemen yang ingin di-style */
         .scroll-area {
-            /* Firefox */
+            /* Untuk Firefox */
             scrollbar-width: thin;
-            scrollbar-color: var(--sb-thumb) var(--sb-track);
+            scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
         }
 
-        /* WebKit (Chrome/Edge/Safari) */
+        /* 2. Untuk Chrome, Safari, Edge (berbasis WebKit) */
         .scroll-area::-webkit-scrollbar {
             width: 10px;
+            /* Lebar scrollbar vertikal */
             height: 10px;
+            /* Tinggi scrollbar horizontal */
         }
 
-        .scroll-slim::-webkit-scrollbar-track {
-            background: var(--sb-track);
-            border-radius: 9999px;
-            margin-block: .25rem;
+        .scroll-area::-webkit-scrollbar-track {
+            background-color: var(--sb-track-color);
+            border-radius: 100vw;
+            /* Cukup besar agar ujungnya selalu bulat */
+            margin-block: 0.25rem;
+            /* Sedikit margin atas-bawah */
         }
 
-        .scroll-slim::-webkit-scrollbar-thumb {
-            background: var(--sb-thumb);
-            border-radius: 9999px;
-            border: 2px solid transparent;
-            /* inset look */
-            background-clip: padding-box;
-            box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18);
+        .scroll-area::-webkit-scrollbar-thumb {
+            background-color: var(--sb-thumb-color);
+            border-radius: 100vw;
+            /* Samakan dengan track agar bulat sempurna */
+            border: 2px solid var(--sb-track-color);
+            /* Trik agar thumb terlihat lebih ramping */
         }
 
-        @media (hover:hover) {
+        /* 3. Efek Interaktif (Hover) */
+        @media (hover: hover) {
             .scroll-area:hover::-webkit-scrollbar-thumb {
-                background: var(--sb-thumb-hover);
+                background-color: var(--sb-thumb-hover-color);
             }
         }
 
-        .scroll-area::-webkit-scrollbar-thumb:active {
-            background: var(--sb-thumb-active);
-        }
-
-        .scroll-area::-webkit-scrollbar-corner {
-            background: transparent;
-        }
-
-        /* Opsional: versi overlay (tanpa track terlihat) */
-        .scroll-overlay::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        /* Aksesibilitas fokus keyboard */
-        .scroll-focus:focus-visible {
+        /* 4. Aksesibilitas: Tampilkan outline saat di-fokus dengan keyboard */
+        .scroll-area:focus-visible {
             outline: 2px solid var(--brand);
             outline-offset: 2px;
-            border-radius: .5rem;
+            border-radius: 0.5rem;
         }
     </style>
 
