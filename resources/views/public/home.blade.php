@@ -195,20 +195,23 @@
                 <div>
                     <h3 class="text-xl font-semibold text-slate-700 text-center mb-8">Pimpinan Inti</h3>
                     {{-- Ketua --}}
-                    <div class="max-w-xs mx-auto text-center mb-8">
-                        <img src="https://ui-avatars.com/api/?name=Eko+Pitoyo&background=cbd5e1&color=1e293b&size=128"
-                            alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
-                        <h4 class="text-lg font-semibold text-slate-800">Eko Pitoyo</h4>
-                        <p class="text-sm text-indigo-600 font-semibold">Ketua Team</p>
-                    </div>
-                    {{-- Wakil, Bendahara, Sekretaris --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
-                            <img src="https://ui-avatars.com/api/?name=Sujito&background=cbd5e1&color=1e293b&size=96"
-                                alt="Sujito" class="w-20 h-20 rounded-full mx-auto mb-3 object-cover">
-                            <h4 class="font-semibold text-slate-800">Sujito</h4>
-                            <p class="text-sm text-slate-500">Wakil Ketua</p>
+                    <div class="flex justify-center items-center md:gap-9 gap-4">
+                        <div class="max-w-xs text-center mb-8">
+                            <img src="https://ui-avatars.com/api/?name=Eko+Pitoyo&background=cbd5e1&color=1e293b&size=128"
+                                alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
+                            <h4 class="text-lg font-semibold text-slate-800">Eko Pitoyo</h4>
+                            <p class="text-sm text-indigo-600 font-semibold">Ketua Team</p>
                         </div>
+                        <div class="max-w-xs text-center mb-8">
+                            <img src="https://ui-avatars.com/api/?name=Sujito&background=cbd5e1&color=1e293b&size=128"
+                                alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
+                            <h4 class="text-lg font-semibold text-slate-800">Sujito</h4>
+                            <p class="text-sm text-indigo-600 font-semibold">Wakil Ketua Team</p>
+                        </div>
+                    </div>
+
+                    {{-- Wakil, Bendahara, Sekretaris --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
                             <h4 class="font-semibold text-slate-800 mb-2">Bendahara</h4>
                             <p class="text-sm text-slate-600">RD. Riana Gustafa H.</p>
