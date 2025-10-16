@@ -5,15 +5,18 @@
 @section('content')
 
     {{-- 1. HERO SECTION --}}
-    <section class="relative h-[60vh] min-h-[400px] flex items-center justify-center text-white text-center">
-        <img src="https://images.unsplash.com/photo-1581362512130-a151b988f002?q=80&w=2070&auto=format&fit=crop"
-            alt="Pembangunan Telaga Harapan" class="absolute inset-0 w-full h-full object-cover">
+    <section class="relative h-[70vh] min-h-[500px] flex items-center justify-center text-white text-center">
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
+            <source src="/overlay.mp4" type="video/mp4">
+            Browser Anda tidak mendukung tag video.
+        </video>
 
         <div class="absolute inset-0 bg-slate-800/70"></div>
 
         <div class="relative z-10 container mx-auto px-4">
             <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
-                Membangun Harapan, Mewujudkan Masa Depan
+                Membangun <span class="text-green-500">Harapan,</span> Mewujudkan <span class="text-green-500">Masa
+                    Depan</span>
             </h1>
             <p class="max-w-2xl mx-auto text-lg text-slate-200">
                 Sebuah inisiatif untuk membangun pusat komunitas dan peribadatan yang bermanfaat bagi seluruh masyarakat
@@ -21,7 +24,7 @@
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-4">
                 <a href="{{ route('public.transparency') }}"
-                    class="px-6 py-3 bg-white text-slate-900 rounded-lg text-sm font-semibold shadow-lg hover:bg-slate-200 transition-colors">
+                    class="px-6 py-3 bg-green-600 text-white rounded-lg text-sm font-semibold shadow-lg hover:bg-green-700 transition-colors">
                     Lihat Laporan Transparansi
                 </a>
                 <a href="#tentang-kami"
