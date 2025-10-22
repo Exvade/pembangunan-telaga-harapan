@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class News extends Model
 {
     protected $fillable = [
-        'title','slug','cover_path','excerpt','body','status','published_at','author_id'
+        'title',
+        'slug',
+        'cover_path',
+        'excerpt',
+        'body',
+        'status',
+        'published_at',
+        'author_id'
     ];
 
     protected $casts = [
@@ -17,5 +24,16 @@ class News extends Model
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
+    }
+
+    public function media()
+    {
+        return $this->hasMany(\App\Models\NewsMedia::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    // (opsional) ambil hanya image untuk grid cepat
+    public function mediaImages()
+    {
+        return $this->media()->where('type', 'image');
     }
 }

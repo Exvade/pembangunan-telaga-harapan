@@ -6,7 +6,7 @@
     <div x-data="{ modalOpen: false, modalContentUrl: '', isModalContentImage: false }" @keydown.escape.window="modalOpen = false">
 
         {{-- 1. HERO SECTION --}}
-        <section class="bg-green-800 text-white">
+        <section class="bg-blue-800 text-white">
             <div class="container mx-auto px-4 py-12">
                 <div class="max-w-4xl mx-auto">
                     <a href="{{ route('public.transparency') }}"

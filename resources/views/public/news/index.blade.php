@@ -49,16 +49,16 @@
                             {{-- Kolom Teks --}}
                             <div class="flex flex-col justify-center">
                                 <p class="text-sm text-slate-500 mb-2">{{ $latestNews->published_at?->format('d F Y') }}</p>
-                                <h2
-                                    class="text-2xl sm:text-3xl font-bold text-slate-800 line-clamp-3 transition-colors duration-300 group-hover:text-green-600">
+                                <h2 {{-- WARNA DIUBAH --}}
+                                    class="text-2xl sm:text-3xl font-bold text-slate-800 line-clamp-3 transition-colors duration-300 group-hover:text-blue-600">
                                     {{ $latestNews->title }}
                                 </h2>
                                 @if ($latestNews->excerpt)
                                     <p class="text-base text-slate-600 line-clamp-3 mt-4">{{ $latestNews->excerpt }}</p>
                                 @endif
                                 {{-- Tombol Call-to-action --}}
-                                <div
-                                    class="mt-6 text-sm font-semibold text-green-600 flex items-center gap-2 group-hover:underline">
+                                <div {{-- WARNA DIUBAH --}}
+                                    class="mt-6 text-sm font-semibold text-blue-600 flex items-center gap-2 group-hover:underline">
                                     Baca Selengkapnya
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                         class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1">
@@ -82,7 +82,8 @@
                     </h3>
                     <form method="GET" class="relative w-full sm:w-auto sm:max-w-xs">
                         <input type="text" name="q" value="{{ $q }}" placeholder="Cari berita..."
-                            class="w-full border border-slate-300 rounded-lg text-sm p-2.5 pl-10 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition">
+                            {{-- WARNA DIUBAH --}}
+                            class="w-full border border-slate-300 rounded-lg text-sm p-2.5 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -115,8 +116,8 @@
 
                                     <div class="p-5 flex flex-col">
                                         <p class="text-xs text-slate-500 mb-2">{{ $n->published_at?->format('d F Y') }}</p>
-                                        <h3
-                                            class="font-bold text-lg text-slate-800 line-clamp-2 transition-colors group-hover:text-green-600">
+                                        <h3 {{-- WARNA DIUBAH --}}
+                                            class="font-bold text-lg text-slate-800 line-clamp-2 transition-colors group-hover:text-blue-600">
                                             {{ $n->title }}
                                         </h3>
                                         @if ($n->excerpt)
