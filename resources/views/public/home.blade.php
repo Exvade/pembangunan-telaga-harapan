@@ -5,17 +5,20 @@
 @section('content')
 
     {{-- 1. HERO SECTION --}}
+    {{-- Latar belakang diubah menjadi lebih gelap (slate-900) dan aksen biru dibuat lebih cerah (blue-500) --}}
     <section class="relative h-[70vh] min-h-[500px] flex items-center justify-center text-white text-center">
         <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
             <source src="/overlay.mp4" type="video/mp4">
             Browser Anda tidak mendukung tag video.
         </video>
 
-        <div class="absolute inset-0 bg-slate-800/70"></div>
+        {{-- WARNA DIUBAH --}}
+        <div class="absolute inset-0 bg-slate-900/70"></div>
 
         <div class="relative z-10 container mx-auto px-4">
             <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight mb-4">
-                Membangun <span class="text-green-500">Harapan,</span> Mewujudkan <span class="text-green-500">Masa
+                {{-- WARNA DIUBAH --}}
+                Membangun <span class="text-blue-500">Harapan,</span> Mewujudkan <span class="text-blue-500">Masa
                     Depan</span>
             </h1>
             <p class="max-w-2xl mx-auto text-lg text-slate-200">
@@ -23,8 +26,8 @@
                 Telaga Harapan.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-4">
-                <a href="{{ route('public.transparency') }}"
-                    class="px-6 py-3 bg-green-600 text-white rounded-lg text-sm font-semibold shadow-lg hover:bg-green-700 transition-colors">
+                <a href="{{ route('public.transparency') }}" {{-- WARNA DIUBAH --}}
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg text-sm font-semibold shadow-lg hover:bg-blue-700 transition-colors">
                     Lihat Laporan Transparansi
                 </a>
                 <a href="#tentang-kami"
@@ -57,25 +60,23 @@
                 </div>
             </div>
             <div class="order-1 lg:order-2">
-                <img src="https://images.unsplash.com/photo-1563911302283-d2b118e56363?q=80&w=1974&auto=format&fit=crop"
-                    alt="Lokasi Telaga Harapan" class="rounded-2xl shadow-xl w-full h-full object-cover">
+                <img src="/gerbang.jpg" alt="Lokasi Telaga Harapan"
+                    class="rounded-2xl shadow-xl w-full h-full object-cover">
             </div>
         </div>
     </section>
 
-    <!-- ===== Visi 2030 (Banner) ===== -->
-    <section id="visi" class="relative bg-green-900 text-white">
+    {{-- Latar belakang diubah dari blue-900 menjadi slate-900 --}}
+    <section id="visi" class="relative bg-blue-900 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 py-14 sm:py-20">
             <div class="max-w-3xl mx-auto">
-                <!-- Icon kutip -->
                 <svg class="w-10 h-10 text-white/80 mb-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path
                         d="M7.17 4C4.3 6.3 3 9 3 12c0 3.31 1.79 6 5 6 2.21 0 4-1.79 4-4 0-2.02-1.5-3.67-3.47-3.95.36-1.23 1.04-2.29 2.04-3.12L7.17 4zm10 0C14.3 6.3 13 9 13 12c0 3.31 1.79 6 5 6 2.21 0 4-1.79 4-4 0-2.02-1.5-3.67-3.47-3.95.36-1.23 1.04-2.29 2.04-3.12L17.17 4z" />
                 </svg>
 
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
-                    Mewujudkan lingkungan Perumahan Telaga Harapan yang tertata, aman, berkelanjutan, dan partisipatif—di
-                    mana setiap warga merasa bangga tinggal dan tumbuh bersama.
+                    Menciptakan lingkungan yang asri, nyaman dan harmoni di Telaga Harapan.
                 </h2>
 
                 <p class="mt-6 text-sm sm:text-base font-semibold text-white/80">
@@ -85,9 +86,6 @@
         </div>
     </section>
 
-
-
-    <!-- ====== MISI 2030 (kolase + daftar misi scrollable TANPA dummy bar) ====== -->
     <section id="misi" class="bg-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20">
             <h3 class="text-center text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-10">
@@ -95,7 +93,6 @@
             </h3>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-                <!-- Kolase gambar -->
                 <div class="relative w-full">
                     <img src="/misi1.jpg" alt="Proyek infrastruktur"
                         class="w-full aspect-[16/9] object-cover rounded-2xl shadow-xl" />
@@ -104,54 +101,37 @@
                     <div class="h-10 sm:h-14"></div>
                 </div>
 
-                <!-- Daftar misi (scrollable nyata) -->
                 <div>
                     <div role="region" aria-label="Daftar Misi 2030" tabindex="0"
                         class="space-y-5 max-h-[60vh] sm:max-h-[70vh] lg:max-h-[32rem] overflow-y-auto pe-3 scroll-area scroll-slim scroll-focus">
-                        <!-- Kartu-kartu misi -->
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
-                                Perencanaan terbuka dengan melibatkan warga pada tiap tahap: identifikasi kebutuhan,
-                                prioritas, dan evaluasi.
+                                Merencanakan dan melaksanakan seluruh program kerja dengan suka cita mengharap ridha Allah.
                             </p>
                         </article>
 
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
-                                Eksekusi proyek yang disiplin—tepat mutu, waktu, dan anggaran.
+                                Membangun Kerjasama dan gotong royong bersama warga.
                             </p>
                         </article>
 
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
-                                Transparansi anggaran melalui laporan periodik yang mudah diakses dan dipahami.
-                            </p>
-                        </article>
-
-                        <!-- Tambah misi sesuka hati -->
-                        <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
-                            <p class="text-slate-700 leading-relaxed">
-                                Peningkatan infrastruktur (jalan, drainase, penerangan, ruang terbuka) secara bertahap dan
-                                berstandar.
+                                Saling tegur, saling sapa, dan saling mengingatkan untuk selalu menjaga kebersihan dan
+                                kelestarian lingkungan.
                             </p>
                         </article>
 
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
-                                Keamanan & ketertiban lewat koordinasi dengan pengurus RT/RW, satpam, dan warga.
+                                Menjaga persatuan dan kesatuan dengan membangun dan menjalin silaturahmi warga.
                             </p>
                         </article>
 
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
-                                Keberlanjutan lingkungan: program penghijauan, pengelolaan sampah, dan efisiensi sumber
-                                daya.
-                            </p>
-                        </article>
-
-                        <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
-                            <p class="text-slate-700 leading-relaxed">
-                                Kolaborasi & gotong royong: mendorong partisipasi, donasi, dan kerja bakti terjadwal.
+                                Mewariskan lingkungan yang asri sebagai warisan yang akan ditinggali oleh anak cucu kita.
                             </p>
                         </article>
                     </div>
@@ -160,9 +140,7 @@
         </div>
     </section>
 
-
-
-
+    {{-- STRUKTUR ORGANISASI --}}
     <section class="py-16 sm:py-20 bg-slate-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
@@ -203,17 +181,19 @@
                             <img src="https://ui-avatars.com/api/?name=Eko+Pitoyo&background=cbd5e1&color=1e293b&size=128"
                                 alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
                             <h4 class="text-lg font-semibold text-slate-800">Eko Pitoyo</h4>
-                            <p class="text-sm text-indigo-600 font-semibold">Ketua Team</p>
+                            {{-- WARNA DIUBAH --}}
+                            <p class="text-sm text-blue-600 font-semibold">Ketua Team</p>
                         </div>
                         <div class="max-w-xs text-center mb-8">
                             <img src="https://ui-avatars.com/api/?name=Sujito&background=cbd5e1&color=1e293b&size=128"
-                                alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
+                                alt="Sujito" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
                             <h4 class="text-lg font-semibold text-slate-800">Sujito</h4>
-                            <p class="text-sm text-indigo-600 font-semibold">Wakil Ketua Team</p>
+                            {{-- WARNA DIUBAH --}}
+                            <p class="text-sm text-blue-600 font-semibold">Wakil Ketua Team</p>
                         </div>
                     </div>
 
-                    {{-- Wakil, Bendahara, Sekretaris --}}
+                    {{-- Bendahara, Sekretaris --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
                             <h4 class="font-semibold text-slate-800 mb-2">Bendahara</h4>
@@ -266,41 +246,38 @@
         </div>
     </section>
 
-    <!-- ====== CTA DONASI (Green Nature) ====== -->
-    <section class="relative overflow-hidden">
-        <!-- Nature halos -->
+    <section class="relative overflow-hidden bg-slate-50">
         <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+            {{-- WARNA DIUBAH --}}
             <div class="absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full opacity-30 blur-3xl"
-                style="background: radial-gradient(60% 60% at 50% 50%, #cfe4d8 0%, rgba(207,228,216,0) 60%);"></div>
-            <div class="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full opacity-25 blur-3xl"
-                style="background: radial-gradient(60% 60% at 50% 50%, #a7c4b5 0%, rgba(167,196,181,0) 60%);"></div>
+                style="background: radial-gradient(60% 60% at 50% 50%, #93c5fd 0%, rgba(147,197,253,0) 60%);"></div>
+            <div class="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full opacity-20 blur-3xl"
+                style="background: radial-gradient(60% 60% at 50% 50%, #60a5fa 0%, rgba(96,165,250,0) 60%);"></div>
         </div>
 
         <div class="container mx-auto px-4 py-16 sm:py-20 relative">
-            <!-- Header -->
             <div class="text-center max-w-3xl mx-auto">
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold"
-                    style="background:#e7f1eb; color:#255745">
+                {{-- WARNA DIUBAH --}}
+                <span
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
                     Donasi & Infaq
                 </span>
-                <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-[#1f2e26]">
+                <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">
                     Wujudkan Harapan Bersama Kami
                 </h2>
-                <p class="mt-3 text-[#4b6255]">
+                <p class="mt-3 text-slate-600">
                     Setiap donasi adalah bata untuk masa depan. Salurkan infaq/sedekah terbaik Anda untuk penyelesaian
                     proyek Telaga Harapan.
                 </p>
             </div>
 
-            <!-- Kartu Donasi -->
             <div x-data="donasiCard()" class="mt-10 max-w-3xl mx-auto">
-                <div class="relative rounded-2xl border border-[#d7e5dc] shadow-sm bg-white/70 backdrop-blur">
-                    <!-- Top bar -->
-                    <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-[#e3efe7]">
+                {{-- WARNA DIUBAH --}}
+                <div class="relative rounded-2xl border border-slate-200 shadow-sm bg-white/70 backdrop-blur">
+                    <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-200">
                         <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-                                style="background:#e7f1eb; color:#2f6d3c">
-                                <!-- bank icon -->
+                            {{-- WARNA DIUBAH --}}
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-blue-100 text-blue-700">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24">
                                     <g fill="none">
@@ -312,50 +289,49 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-xs text-[#607a6b]">Bank Tujuan</p>
-                                <p class="text-sm font-semibold text-[#1f2e26]">
+                                {{-- WARNA DIUBAH --}}
+                                <p class="text-xs text-slate-500">Bank Tujuan</p>
+                                <p class="text-sm font-semibold text-slate-800">
                                     Bank Syariah Indonesia (BSI)
                                 </p>
                             </div>
                         </div>
 
-                        <!-- Switch metode (opsional) -->
                         <div class="hidden sm:flex items-center gap-2 text-xs">
-                            <button type="button" @click="tab='transfer'"
-                                :class="tab === 'transfer' ? 'bg-[#e7f1eb] text-[#255745]' : 'bg-transparent text-[#4b6255]'"
+                            <button type="button" @click="tab='transfer'" {{-- WARNA DIUBAH --}}
+                                :class="tab === 'transfer' ? 'bg-blue-100 text-blue-800' : 'bg-transparent text-slate-600'"
                                 class="px-3 py-1 rounded-full font-semibold transition">
                                 Transfer
                             </button>
-                            <button type="button" @click="tab='qr'"
-                                :class="tab === 'qr' ? 'bg-[#e7f1eb] text-[#255745]' : 'bg-transparent text-[#4b6255]'"
+                            <button type="button" @click="tab='qr'" {{-- WARNA DIUBAH --}}
+                                :class="tab === 'qr' ? 'bg-blue-100 text-blue-800' : 'bg-transparent text-slate-600'"
                                 class="px-3 py-1 rounded-full font-semibold transition">
                                 QR (Opsional)
                             </button>
                         </div>
                     </div>
 
-                    <!-- Body -->
                     <div class="p-6">
-                        <!-- TRANSFER -->
                         <div x-show="tab==='transfer'" x-transition>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <!-- Rekening -->
                                 <div class="space-y-2">
-                                    <p class="text-xs text-[#607a6b]">No. Rekening</p>
+                                    <p class="text-xs text-blue-600">No. Rekening</p>
                                     <div class="flex items-center justify-between gap-3">
+                                        {{-- WARNA DIUBAH --}}
                                         <p
-                                            class="font-semibold text-[#1f2e26] tracking-wider tabular-nums font-mono select-all">
+                                            class="font-semibold text-slate-800 tracking-wider tabular-nums font-mono select-all">
                                             1234 5678 9012
                                         </p>
+                                        {{-- WARNA DIUBAH --}}
                                         <button type="button" @click="copy('123456789012')"
-                                            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#d7e5dc] text-sm font-semibold text-[#255745] hover:bg-[#e7f1eb] transition">
+                                            class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition">
 
                                             <svg x-show="!copied" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
                                                 width="24" height="24" viewBox="0 0 24 24">
                                                 <path fill="currentColor"
                                                     d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2m0 16H8V7h11z" />
                                             </svg>
-                                            <svg x-show="copied" x-cloak class="w-4 h-4 text-[#2f6d3c]"
+                                            <svg x-show="copied" x-cloak class="w-4 h-4 text-blue-700"
                                                 viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd"
                                                     d="M16.707 5.293a1 1 0 0 1 0 1.414l-7.25 7.25a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L8.75 11.79l6.543-6.497a1 1 0 0 1 1.414 0Z"
@@ -368,37 +344,34 @@
                                     </div>
                                 </div>
 
-                                <!-- Atas Nama -->
                                 <div class="space-y-2">
-                                    <p class="text-xs text-[#607a6b]">Atas Nama</p>
-                                    <p class="font-semibold text-[#1f2e26]">Panitia Pembangunan Telaga Harapan</p>
+                                    {{-- WARNA DIUBAH --}}
+                                    <p class="text-xs text-slate-500">Atas Nama</p>
+                                    <p class="font-semibold text-slate-800">Panitia Pembangunan Telaga Harapan</p>
                                 </div>
                             </div>
 
-                            <!-- Catatan -->
-                            <div class="mt-6 rounded-xl border border-[#e3efe7] bg-[#f5fbf7] p-4">
-                                <p class="text-sm text-[#2f4037]">
+                            {{-- WARNA DIUBAH --}}
+                            <div class="mt-6 rounded-xl border border-blue-200 bg-blue-50/80 p-4">
+                                <p class="text-sm text-slate-700">
                                     Mohon tulis berita transfer: <span class="font-semibold">“Donasi Telaga Harapan”</span>
                                     agar tim kami mudah melakukan rekonsiliasi.
                                 </p>
                             </div>
                         </div>
 
-                        <!-- QR (Opsional) -->
                         <div x-show="tab==='qr'" x-transition x-cloak>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
                                 <div
-                                    class="aspect-square w-full rounded-xl border border-[#d7e5dc] bg-white/80 grid place-items-center">
-                                    <!-- Ganti dengan QR asli -->
-                                    <span class="text-[#607a6b] text-sm">QRIS / QR Bank (tempatkan gambar di sini)</span>
+                                    class="aspect-square w-full rounded-xl border border-slate-200 bg-white/80 grid place-items-center">
+                                    <span class="text-slate-600 text-sm">QRIS / QR Bank (tempatkan gambar di sini)</span>
                                 </div>
                                 <div class="space-y-3">
-                                    <p class="text-sm text-[#374b41]">
-                                        Scan QR untuk berdonasi via aplikasi perbankan/e-wallet yang mendukung. Nominal akan
-                                        terisi otomatis (jika diatur).
+                                    <p class="text-sm text-slate-600">
+                                        Scan QR untuk berdonasi via aplikasi perbankan/e-wallet yang mendukung.
                                     </p>
-                                    <div class="text-xs text-[#607a6b]">
-                                        Catatan: Pastikan nama penerima <span class="font-semibold text-[#2f4037]">Panitia
+                                    <div class="text-xs text-slate-700">
+                                        Catatan: Pastikan nama penerima <span class="font-semibold text-slate-800">Panitia
                                             Pembangunan Telaga Harapan</span>.
                                     </div>
                                 </div>
@@ -406,19 +379,17 @@
                         </div>
                     </div>
 
-                    <!-- Footer actions -->
                     <div
-                        class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-[#e3efe7]">
-                        <div class="text-xs text-[#607a6b]">
+                        class="flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-200">
+                        <div class="text-xs text-slate-500">
                             Konfirmasi donasi Anda agar kami dapat menerbitkan tanda terima resmi.
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
                             <a href="https://wa.me/6285156098261?text=Assalamualaikum,%20saya%20ingin%20konfirmasi%20donasi%20untuk%20proyek%20Telaga%20Harapan."
                                 target="_blank"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm
-                      transition focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                style="background:#2f6d3c; color:#f0f9f4; box-shadow:0 6px 16px -6px rgba(47,109,60,.35)">
-                                <!-- WhatsApp icon -->
+                                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                {{-- WARNA DIUBAH --}}
+                                style="background:#2563eb; color:white; box-shadow:0 6px 16px -6px rgba(37, 99, 235, 0.4)">
                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                     viewBox="0 0 24 24">
                                     <path fill="currentColor"
@@ -429,10 +400,8 @@
                         </div>
                     </div>
 
-                    <!-- Toast copied -->
-                    <div x-show="toast" x-transition x-cloak
-                        class="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-4 translate-y-full
-                    bg-[#1f2e26] text-white text-sm px-4 py-2 rounded-full shadow-md">
+                    <div x-show="toast" x-transition x-cloak {{-- WARNA DIUBAH --}}
+                        class="pointer-events-none absolute left-1/2 -translate-x-1/2 -bottom-4 translate-y-full bg-slate-800 text-white text-sm px-4 py-2 rounded-full shadow-md">
                         Detail disalin ke clipboard
                     </div>
                 </div>
@@ -452,15 +421,6 @@
                         this.flashToast();
                         setTimeout(() => this.copied = false, 1600);
                     });
-                },
-                copyAll() {
-                    const detail = [
-                        'Bank: Bank Syariah Indonesia (BSI)',
-                        'No. Rekening: 123456789012',
-                        'Atas Nama: Panitia Pembangunan Telaga Harapan',
-                        'Berita: Donasi Telaga Harapan'
-                    ].join('\\n');
-                    navigator.clipboard.writeText(detail).then(() => this.flashToast());
                 },
                 flashToast() {
                     this.toast = true;

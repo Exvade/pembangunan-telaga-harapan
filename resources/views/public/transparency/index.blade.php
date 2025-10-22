@@ -6,7 +6,7 @@
     <div x-data="{ modalOpen: false, modalContentUrl: '', isModalContentImage: false }" @keydown.escape.window="modalOpen = false">
 
         {{-- 1. HERO SECTION --}}
-        <section class="bg-slate-800 text-white">
+        <section class="bg-green-800 text-white">
             <div class="container mx-auto px-4 py-16 text-center">
                 <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
                     Laporan Transparansi Dana

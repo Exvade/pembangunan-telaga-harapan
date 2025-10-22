@@ -94,8 +94,7 @@
                         class="text-lg font-bold text-slate-800 flex justify-center items-center gap-2">
                         {{-- Team Pembangunan Telaga Harapan --}}
                         <img src="/logo.jpeg" class="w-12" alt="Logo Team Pembangunan Telaga Harapan">
-                        <span class="text-blue-800 font-bold">Team <span
-                                class="text-orange-700">Pembangunan</span></span>
+                        <p class="text-blue-800">Team Pembangunan</p>
                     </a>
 
                     {{-- Navigasi Desktop --}}
