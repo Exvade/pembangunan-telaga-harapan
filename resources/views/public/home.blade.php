@@ -22,7 +22,7 @@
                     Depan</span>
             </h1>
             <p class="max-w-2xl mx-auto text-lg text-slate-200">
-                Sebuah inisiatif untuk membangun pusat komunitas dan peribadatan yang bermanfaat bagi seluruh masyarakat
+                Sebuah inisiatif untuk membangun komunitas yang nyaman, penuh harmoni dan bermanfaat bagi seluruh masyarakat
                 Telaga Harapan.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-4">
@@ -174,7 +174,7 @@
 
                 {{-- PIMPINAN INTI --}}
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 text-center mb-8">Pimpinan Inti</h3>
+                    <h3 class="text-xl font-semibold text-slate-700 text-center mb-8">Pengurus Inti</h3>
                     {{-- Ketua --}}
                     <div class="flex justify-center items-center md:gap-9 gap-4">
                         <div class="max-w-xs text-center mb-8">
