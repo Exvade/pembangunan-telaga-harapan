@@ -7,7 +7,7 @@
     {{-- 1. HERO SECTION --}}
     {{-- Latar belakang diubah menjadi lebih gelap (slate-900) dan aksen biru dibuat lebih cerah (blue-500) --}}
     <section class="relative h-[70vh] min-h-[500px] flex items-center justify-center text-white text-center">
-        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover">
+        <video autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover" poster="/misi2.jpeg">
             <source src="/overlay.mp4" type="video/mp4">
             Browser Anda tidak mendukung tag video.
         </video>
@@ -40,8 +40,8 @@
 
     {{-- 2. TENTANG KAMI --}}
     <section id="tentang-kami" class="py-16 sm:py-20 bg-white">
-        <div class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="order-2 lg:order-1">
+        <div class="container mx-auto px-4 gap-12 items-center justify-between flex">
+            <div class="order-2 lg:order-1 max-w-2xl">
                 <h2 class="text-3xl font-bold tracking-tight text-slate-800 mb-4">
                     Tentang Kami
                 </h2>
@@ -60,8 +60,8 @@
                 </div>
             </div>
             <div class="order-1 lg:order-2">
-                <img src="/gerbang.jpg" alt="Lokasi Telaga Harapan"
-                    class="rounded-2xl shadow-xl w-full h-full object-cover">
+                <img src="/about.png" alt="Lokasi Telaga Harapan"
+                    class="rounded-2xl shadow-xl w-[459px] aspect-[4/3] object-cover">
             </div>
         </div>
     </section>
