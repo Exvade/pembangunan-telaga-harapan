@@ -266,7 +266,8 @@
                     Wujudkan Harapan Bersama Kami
                 </h2>
                 <p class="mt-3 text-slate-600">
-                    Setiap donasi adalah bata untuk masa depan. Salurkan infaq/sedekah terbaik Anda untuk penyelesaian
+                    Setiap donasi adalah bata pondasi untuk masa depan. Salurkan infaq/sedekah terbaik Anda untuk
+                    penyelesaian
                     proyek Telaga Harapan.
                 </p>
             </div>
