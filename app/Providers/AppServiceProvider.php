@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if($this->app->environment('production')) {
+            \URL::forceScheme('https');
+        }
         // helper untuk Blade: embed_url()
         \Illuminate\Support\Facades\Blade::directive('php', fn($e) => "<?php {$e} ?>"); // (jaga2 sudah ada)
 

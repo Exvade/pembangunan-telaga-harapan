@@ -40,7 +40,7 @@
 
     {{-- 2. TENTANG KAMI --}}
     <section id="tentang-kami" class="py-16 sm:py-20 bg-white">
-        <div class="container mx-auto px-4 gap-12 items-center justify-between flex">
+        <div class="container mx-auto px-4 gap-12 items-center justify-between flex flex-col md:flex-row"">
             <div class="order-2 lg:order-1 max-w-2xl">
                 <h2 class="text-3xl font-bold tracking-tight text-slate-800 mb-4">
                     Tentang Kami
@@ -292,7 +292,7 @@
                                 {{-- WARNA DIUBAH --}}
                                 <p class="text-xs text-slate-500">Bank Tujuan</p>
                                 <p class="text-sm font-semibold text-slate-800">
-                                    Bank Syariah Indonesia (BSI)
+                                    Bank Mandiri
                                 </p>
                             </div>
                         </div>
@@ -303,11 +303,14 @@
                                 class="px-3 py-1 rounded-full font-semibold transition">
                                 Transfer
                             </button>
-                            <button type="button" @click="tab='qr'" {{-- WARNA DIUBAH --}}
+                            {{-- <div>
+                            <button type="button" @click="tab='qr'" WARNA DIUBAH
                                 :class="tab === 'qr' ? 'bg-blue-100 text-blue-800' : 'bg-transparent text-slate-600'"
                                 class="px-3 py-1 rounded-full font-semibold transition">
                                 QR (Opsional)
-                            </button>
+                            </button>    
+                            </div> --}}
+
                         </div>
                     </div>
 
@@ -320,10 +323,10 @@
                                         {{-- WARNA DIUBAH --}}
                                         <p
                                             class="font-semibold text-slate-800 tracking-wider tabular-nums font-mono select-all">
-                                            1234 5678 9012
+                                            1560 0168 86261
                                         </p>
                                         {{-- WARNA DIUBAH --}}
-                                        <button type="button" @click="copy('123456789012')"
+                                        <button type="button" @click="copy('1560016886261')"
                                             class="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition">
 
                                             <svg x-show="!copied" class="w-4 h-4" xmlns="http://www.w3.org/2000/svg"
@@ -347,7 +350,8 @@
                                 <div class="space-y-2">
                                     {{-- WARNA DIUBAH --}}
                                     <p class="text-xs text-slate-500">Atas Nama</p>
-                                    <p class="font-semibold text-slate-800">Panitia Pembangunan Telaga Harapan</p>
+                                    <p class="font-semibold text-slate-800">RD RIANA GUSTAFA HAR
+                                    </p>
                                 </div>
                             </div>
 
@@ -360,7 +364,7 @@
                             </div>
                         </div>
 
-                        <div x-show="tab==='qr'" x-transition x-cloak>
+                        {{-- <div x-show="tab==='qr'" x-transition x-cloak>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
                                 <div
                                     class="aspect-square w-full rounded-xl border border-slate-200 bg-white/80 grid place-items-center">
@@ -376,7 +380,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div
@@ -385,7 +389,7 @@
                             Konfirmasi donasi Anda agar kami dapat menerbitkan tanda terima resmi.
                         </div>
                         <div class="flex flex-wrap items-center gap-3">
-                            <a href="https://wa.me/6285156098261?text=Assalamualaikum,%20saya%20ingin%20konfirmasi%20donasi%20untuk%20proyek%20Telaga%20Harapan."
+                            <a href="https://wa.me/628111975831?text=Assalamualaikum,%20saya%20ingin%20konfirmasi%20donasi%20untuk%20proyek%20Telaga%20Harapan."
                                 target="_blank"
                                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-2"
                                 {{-- WARNA DIUBAH --}}
