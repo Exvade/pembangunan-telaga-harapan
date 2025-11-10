@@ -41,7 +41,7 @@
     {{-- 2. TENTANG KAMI --}}
     <section id="tentang-kami" class="py-16 sm:py-20 bg-white">
         <div class="container mx-auto px-4 gap-12 items-center justify-between flex flex-col md:flex-row"">
-            <div class="order-2 lg:order-1 max-w-2xl">
+            <div class="order-2 lg:order-1 max-w-2xl" data-aos="fade-right" data-aos-duration="800">
                 <h2 class="text-3xl font-bold tracking-tight text-slate-800 mb-4">
                     Tentang Kami
                 </h2>
@@ -59,7 +59,7 @@
                     </p>
                 </div>
             </div>
-            <div class="order-1 lg:order-2">
+            <div class="order-1 lg:order-2" data-aos="fade-left" data-aos-duration="800">
                 <img src="/about.png" alt="Lokasi Telaga Harapan"
                     class="rounded-2xl shadow-xl w-[459px] aspect-[4/3] object-cover">
             </div>
@@ -69,7 +69,7 @@
     {{-- Latar belakang diubah dari blue-900 menjadi slate-900 --}}
     <section id="visi" class="relative bg-blue-900 text-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 py-14 sm:py-20">
-            <div class="max-w-3xl mx-auto">
+            <div class="max-w-3xl mx-auto" data-aos="fade-up" data-aos-duration="800">
                 <svg class="w-10 h-10 text-white/80 mb-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path
                         d="M7.17 4C4.3 6.3 3 9 3 12c0 3.31 1.79 6 5 6 2.21 0 4-1.79 4-4 0-2.02-1.5-3.67-3.47-3.95.36-1.23 1.04-2.29 2.04-3.12L7.17 4zm10 0C14.3 6.3 13 9 13 12c0 3.31 1.79 6 5 6 2.21 0 4-1.79 4-4 0-2.02-1.5-3.67-3.47-3.95.36-1.23 1.04-2.29 2.04-3.12L17.17 4z" />
@@ -88,22 +88,26 @@
 
     <section id="misi" class="bg-white">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 py-16 sm:py-20">
-            <h3 class="text-center text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-10">
+            <h3 class="text-center text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-10"
+                data-aos="fade-up" data-aos-duration="500">
                 Misi - 2030
             </h3>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
                 <div class="relative w-full">
                     <img src="/misi1.jpg" alt="Proyek infrastruktur"
-                        class="w-full aspect-[16/9] object-cover rounded-2xl shadow-xl" />
+                        class="w-full aspect-[16/9] object-cover rounded-2xl shadow-xl" data-aos="fade-right"
+                        data-aos-duration="800" />
                     <img src="/misi2.jpeg" alt="Instalasi EPC"
-                        class="absolute right-6 -bottom-10 w-1/2 aspect-[4/3] object-cover rounded-2xl shadow-xl hidden sm:block" />
+                        class="absolute right-6 -bottom-10 w-1/2 aspect-[4/3] object-cover rounded-2xl shadow-xl hidden sm:block"
+                        data-aos="fade-up" data-aos-duration="800" />
                     <div class="h-10 sm:h-14"></div>
                 </div>
 
                 <div>
                     <div role="region" aria-label="Daftar Misi 2030" tabindex="0"
-                        class="space-y-5 max-h-[60vh] sm:max-h-[70vh] lg:max-h-[32rem] overflow-y-auto pe-3 scroll-area scroll-slim scroll-focus">
+                        class="space-y-5 max-h-[60vh] sm:max-h-[70vh] lg:max-h-[32rem] overflow-y-auto pe-3 scroll-area scroll-slim scroll-focus"
+                        data-aos="fade-up" data-aos-duration="800">
                         <article class="bg-white border border-slate-200/70 rounded-xl shadow-sm p-5 sm:p-6">
                             <p class="text-slate-700 leading-relaxed">
                                 Merencanakan dan melaksanakan seluruh program kerja dengan suka cita mengharap ridha Allah.

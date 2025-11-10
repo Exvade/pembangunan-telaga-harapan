@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <title>@yield('title', 'Telaga Harapan')</title>
 
     {{-- Alpine.js untuk interaktivitas menu mobile --}}
@@ -81,7 +83,7 @@
 
 </head>
 
-<body class="bg-white text-slate-800 antialiased">
+<body class="bg-white text-slate-800 antialiased overflow-x-hidden">
 
     {{-- Alpine.js state untuk menu mobile --}}
     <div x-data="{ mobileMenuOpen: false }">
@@ -230,5 +232,9 @@
         </footer>
     </div>
 </body>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
 
 </html>
