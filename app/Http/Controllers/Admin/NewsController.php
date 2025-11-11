@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\NewsMedia;
 use Illuminate\Support\Facades\Storage;
 
 class NewsController extends Controller
@@ -14,16 +13,11 @@ class NewsController extends Controller
     public function index(Request $r)
     {
         $q = $r->get('q');
-
-        $items = News::withCount('media') // ⬅️ tambahkan ini
-            ->when($q, fn($qq) => $qq->where('title', 'like', "%$q%"))
+        $items = News::when($q, fn($qq) => $qq->where('title', 'like', "%$q%"))
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
-
+            ->paginate(10);
         return view('admin.news.index', compact('items', 'q'));
     }
-
 
     public function create()
     {
@@ -37,70 +31,60 @@ class NewsController extends Controller
             'body'   => 'required|string',
             'status' => 'required|in:draft,published',
             'cover'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
-            // dokumentasi kegiatan
-            'media_files.*' => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,mp4,webm|max:12288', // 12MB
-            'embed_urls'    => 'nullable|string', // satu-per-baris
+            // HANYA foto & video, tidak boleh PDF
+            'media_files'   => 'nullable|array',
+            'media_files.*' => 'file|max:5120|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
         ]);
 
-        $slug      = \Illuminate\Support\Str::slug($data['title']) . '-' . \Illuminate\Support\Str::random(5);
+        $slug = Str::slug($data['title']) . '-' . Str::random(5);
         $coverPath = $r->file('cover')?->store('covers', 'public');
 
         $news = News::create([
             'title'        => $data['title'],
             'slug'         => $slug,
             'cover_path'   => $coverPath,
-            'excerpt'      => \Illuminate\Support\Str::limit(strip_tags($r->input('body')), 160),
+            'excerpt'      => Str::limit(strip_tags($r->input('body')), 160),
             'body'         => $data['body'],
             'status'       => $data['status'],
             'published_at' => $data['status'] === 'published' ? now() : null,
             'author_id'    => auth()->id(),
         ]);
 
-        // === SIMPAN MEDIA UPLOAD ===
+        // ========== Fallback non-AJAX: upload media saat create ==========
         if ($r->hasFile('media_files')) {
-            foreach ($r->file('media_files') as $file) {
+            $limit    = 10;
+            $existing = $news->media()->count();
+            $files    = $r->file('media_files');
+
+            foreach ($files as $file) {
                 if (!$file) continue;
-                $mime = $file->getClientMimeType();
-                $path = $file->store('news_docs', 'public');
+                if ($existing >= $limit) break;
 
-                $type = str_starts_with($mime, 'image/') ? 'image'
-                    : (str_starts_with($mime, 'video/') ? 'video' : 'file');
+                $mime = $file->getMimeType();
+                $type = str_starts_with($mime, 'image/') ? 'image' : (str_starts_with($mime, 'video/') ? 'video' : null);
+                if (!$type) continue; // jaga-jaga kalau bukan image/video
 
-                NewsMedia::create([
-                    'news_id'   => $news->id,
-                    'type'      => $type,
-                    'file_path' => $path,
-                    'mime_type' => $mime,
-                    'caption'   => null,
-                    'credit'    => null,
+                $stored = $file->store("news-media/{$news->id}", 'public');
+
+                $news->media()->create([
+                    'type'       => $type,
+                    'file_path'  => $stored,
+                    'mime_type'  => $mime,
+                    'caption'    => null,
+                    'credit'     => null,
                     'sort_order' => 0,
                 ]);
-            }
-        }
 
-        // === SIMPAN VIDEO EMBED (YouTube/Vimeo) ===
-        if ($r->filled('embed_urls')) {
-            $lines = preg_split("/\r\n|\n|\r/", trim($r->input('embed_urls')));
-            foreach ($lines as $url) {
-                $url = trim($url);
-                if ($url === '') continue;
-                if (!$this->isAllowedEmbed($url)) continue; // skip jika bukan domain whitelist
-                NewsMedia::create([
-                    'news_id'   => $news->id,
-                    'type'      => 'video',
-                    'embed_url' => $url,
-                    'sort_order' => 0,
-                ]);
+                $existing++;
             }
         }
 
         return redirect()->route('admin.news.index')->with('status', 'Berita ditambahkan.');
     }
 
-
     public function edit(News $news)
     {
+        $news->load(['media' => fn($q) => $q->orderBy('sort_order')->orderBy('id')]);
         return view('admin.news.form', ['item' => $news]);
     }
 
@@ -111,15 +95,13 @@ class NewsController extends Controller
             'body'   => 'required|string',
             'status' => 'required|in:draft,published',
             'cover'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
-            // media
-            'media_files.*'  => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,mp4,webm|max:12288',
-            'embed_urls'     => 'nullable|string',
-            'media'          => 'nullable|array', // media[ID][caption|credit|sort_order|is_featured]
-            'media_delete'   => 'nullable|array', // id-id yang mau dihapus
+            // HANYA foto & video, tidak boleh PDF
+            'media_files'   => 'nullable|array',
+            'media_files.*' => 'file|max:5120|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+            'delete_media_ids'   => 'array',
+            'delete_media_ids.*' => 'integer',
         ]);
 
-        // Cover
         $coverPath = $news->cover_path;
         if ($r->hasFile('cover')) {
             if ($coverPath) Storage::disk('public')->delete($coverPath);
@@ -129,88 +111,133 @@ class NewsController extends Controller
         $news->update([
             'title'        => $data['title'],
             'cover_path'   => $coverPath,
-            'excerpt'      => \Illuminate\Support\Str::limit(strip_tags($r->input('body')), 160),
+            'excerpt'      => Str::limit(strip_tags($r->input('body')), 160),
             'body'         => $data['body'],
             'status'       => $data['status'],
             'published_at' => $data['status'] === 'published' ? ($news->published_at ?? now()) : null,
         ]);
 
-        // HAPUS media yang dicentang
-        if ($r->filled('media_delete')) {
-            $ids = array_map('intval', $r->input('media_delete', []));
-            $toDel = NewsMedia::where('news_id', $news->id)->whereIn('id', $ids)->get();
-            foreach ($toDel as $m) {
+        // Hapus media yg ditandai (fallback non-AJAX)
+        $idsToDelete = $r->input('delete_media_ids', []);
+        if (!empty($idsToDelete)) {
+            $medias = $news->media()->whereIn('id', $idsToDelete)->get();
+            foreach ($medias as $m) {
                 if ($m->file_path) Storage::disk('public')->delete($m->file_path);
-                if ($m->thumb_path) Storage::disk('public')->delete($m->thumb_path);
                 $m->delete();
             }
         }
 
-        // UPDATE caption/credit/urutan/featured
-        if ($r->filled('media')) {
-            foreach ($r->input('media') as $id => $payload) {
-                $m = NewsMedia::where('news_id', $news->id)->where('id', (int)$id)->first();
-                if (!$m) continue;
-                $m->caption     = $payload['caption']    ?? $m->caption;
-                $m->credit      = $payload['credit']     ?? $m->credit;
-                $m->sort_order  = isset($payload['sort_order']) ? (int)$payload['sort_order'] : $m->sort_order;
-                $m->is_featured = isset($payload['is_featured']) ? (bool)$payload['is_featured'] : false;
-                $m->save();
-            }
-        }
-
-        // TAMBAH media baru dari upload
+        // ========== Fallback non-AJAX: upload media baru saat update ==========
         if ($r->hasFile('media_files')) {
-            foreach ($r->file('media_files') as $file) {
+            $limit    = 10;
+            $existing = $news->media()->count();
+            $files    = $r->file('media_files');
+
+            foreach ($files as $file) {
                 if (!$file) continue;
-                $mime = $file->getClientMimeType();
-                $path = $file->store('news_docs', 'public');
-                $type = str_starts_with($mime, 'image/') ? 'image'
-                    : (str_starts_with($mime, 'video/') ? 'video' : 'file');
+                if ($existing >= $limit) break;
 
-                NewsMedia::create([
-                    'news_id'   => $news->id,
-                    'type'      => $type,
-                    'file_path' => $path,
-                    'mime_type' => $mime,
+                $mime = $file->getMimeType();
+                $type = str_starts_with($mime, 'image/') ? 'image' : (str_starts_with($mime, 'video/') ? 'video' : null);
+                if (!$type) continue;
+
+                $stored = $file->store("news-media/{$news->id}", 'public');
+
+                $news->media()->create([
+                    'type'       => $type,
+                    'file_path'  => $stored,
+                    'mime_type'  => $mime,
+                    'caption'    => null,
+                    'credit'     => null,
                     'sort_order' => 0,
                 ]);
+
+                $existing++;
             }
         }
 
-        // TAMBAH embed video baru
-        if ($r->filled('embed_urls')) {
-            $lines = preg_split("/\r\n|\n|\r/", trim($r->input('embed_urls')));
-            foreach ($lines as $url) {
-                $url = trim($url);
-                if ($url === '') continue;
-                if (!$this->isAllowedEmbed($url)) continue;
-                NewsMedia::create([
-                    'news_id'   => $news->id,
-                    'type'      => 'video',
-                    'embed_url' => $url,
-                    'sort_order' => 0,
-                ]);
-            }
-        }
-
-        return redirect()->route('admin.news.edit', $news)->with('status', 'Berita diperbarui.');
+        return redirect()->route('admin.news.index')->with('status', 'Berita diperbarui.');
     }
-
-    protected function isAllowedEmbed(string $url): bool
-    {
-        $host = parse_url($url, PHP_URL_HOST) ?: '';
-        $host = strtolower($host);
-        return str_contains($host, 'youtube.com')
-            || str_contains($host, 'youtu.be')
-            || str_contains($host, 'vimeo.com');
-    }
-
 
     public function destroy(News $news)
     {
         if ($news->cover_path) Storage::disk('public')->delete($news->cover_path);
+        foreach ($news->media as $m) {
+            if ($m->file_path) Storage::disk('public')->delete($m->file_path);
+        }
+        $news->media()->delete();
         $news->delete();
+
         return back()->with('status', 'Berita dihapus.');
+    }
+
+    /**
+     * AJAX: Upload media (hanya foto & video) dengan batas total 10 per berita.
+     * Route contoh: admin.news.media.store
+     */
+    public function storeMedia(Request $r, News $news)
+    {
+        $data = $r->validate([
+            'media_files'   => ['required', 'array', 'min:1'],
+            'media_files.*' => [
+                'required',
+                'file',
+                'max:5120',
+                // HANYA foto & video
+                'mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+            ],
+        ], [
+            'media_files.required'    => 'Pilih minimal satu file.',
+            'media_files.*.mimetypes' => 'Hanya gambar atau video yang diperbolehkan.',
+            'media_files.*.max'       => 'Ukuran file maksimal 5 MB.',
+        ]);
+
+        $limit    = 10;
+        $existing = $news->media()->count();
+        $incoming = count($data['media_files']);
+
+        if ($existing >= $limit) {
+            return response()->json([
+                'ok' => false,
+                'error' => "Media untuk berita ini sudah mencapai batas {$limit} item."
+            ], 422);
+        }
+
+        if ($existing + $incoming > $limit) {
+            $allowed = $limit - $existing;
+            return response()->json([
+                'ok' => false,
+                'error' => "Anda hanya bisa menambah {$allowed} file lagi (maks {$limit} per berita)."
+            ], 422);
+        }
+
+        $created = [];
+        foreach ($data['media_files'] as $file) {
+            if (!$file) continue;
+
+            $mime = $file->getMimeType();
+            $type = str_starts_with($mime, 'image/') ? 'image' : (str_starts_with($mime, 'video/') ? 'video' : null);
+            if (!$type) continue;
+
+            $stored = $file->store("news-media/{$news->id}", 'public');
+
+            $media = $news->media()->create([
+                'type'       => $type,
+                'file_path'  => $stored,
+                'mime_type'  => $mime,
+                'caption'    => null,
+                'credit'     => null,
+                'sort_order' => 0,
+            ]);
+
+            $created[] = [
+                'id'   => $media->id,
+                'type' => $media->type,
+                'url'  => Storage::url($media->file_path),
+                'mime' => $media->mime_type,
+            ];
+        }
+
+        return response()->json(['ok' => true, 'items' => $created]);
     }
 }

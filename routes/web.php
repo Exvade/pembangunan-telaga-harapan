@@ -25,17 +25,24 @@ Route::get('/transparansi/kategori/{category}', [SiteController::class, 'categor
 Route::view('/tentang', 'public.about')->name('public.about');
 
 // Auth routes dari Breeze sudah otomatis tersedia (login, logout, dll)
-Route::get('/dashboard', fn () => redirect()->route('admin.dashboard'))->name('dashboard');
+Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'))->name('dashboard');
 // GROUP ADMIN
-Route::middleware(['auth','role:admin'])
+Route::middleware(['auth', 'role:admin'])
 
     ->prefix('admin')->name('admin.')
     ->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('news', AdminNewsController::class)->except(['show']);
+        // AJAX: upload media langsung untuk sebuah berita
+        Route::post('news/{news}/media', [AdminNewsController::class, 'storeMedia'])
+            ->name('news.media.store')
+            ->middleware('auth');
+        Route::delete('news/{news}/media/{media}', [AdminNewsController::class, 'mediaDestroy'])
+            ->name('news.media.destroy');
+
         Route::resource('categories', AdminCategoryController::class)->except(['show']);
         Route::resource('incomes', AdminIncomeController::class)->except(['show']);
         Route::resource('expenses', AdminExpenseController::class)->except(['show']);
     });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
