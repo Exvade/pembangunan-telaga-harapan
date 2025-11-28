@@ -233,7 +233,7 @@ class NewsController extends Controller
             $created[] = [
                 'id'   => $media->id,
                 'type' => $media->type,
-                'url'  => Storage::url($media->file_path),
+                'url'  => asset('media/' . $media->file_path),
                 'mime' => $media->mime_type,
             ];
         }

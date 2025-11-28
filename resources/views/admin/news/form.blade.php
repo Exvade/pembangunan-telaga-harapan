@@ -86,7 +86,7 @@
                             @foreach ($item->media ?? collect() as $m)
                                 @php
                                     $countExisting++;
-                                    $url = $m->file_path ? Storage::url($m->file_path) : null;
+                                    $url = $m->file_path ? asset('media/' . $m->file_path) : null;
                                     $isImage = $m->type === 'image';
                                     $isVideo = $m->type === 'video';
                                 @endphp
@@ -162,7 +162,7 @@
                     </div>
 
                     {{-- Cover --}}
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200" x-data="{ imagePreview: '{{ $item->cover_path ? Storage::url($item->cover_path) : '' }}' }">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200" x-data="{ imagePreview: '{{ $item->cover_path ? asset('media/' . $item->cover_path) : '' }}' }">
                         <label class="block text-sm font-semibold mb-2 text-slate-700">Cover (opsional)</label>
                         <div @click="$refs.coverInput.click()"
                             class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md cursor-pointer hover:border-indigo-500 transition">
