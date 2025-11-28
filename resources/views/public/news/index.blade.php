@@ -31,7 +31,8 @@
                             {{-- Kolom Gambar --}}
                             <div class="overflow-hidden">
                                 @if ($latestNews->cover_path)
-                                    <img src="{{ Storage::url($latestNews->cover_path) }}"
+                                    {{-- PERBAIKAN 1: Ganti Storage::url jadi asset('media/...') --}}
+                                    <img src="{{ asset('media/' . $latestNews->cover_path) }}"
                                         class="rounded-xl w-full h-auto object-cover aspect-[16/10] shadow-md transition-transform duration-300 ease-in-out group-hover:scale-105"
                                         alt="Cover: {{ $latestNews->title }}">
                                 @else
@@ -102,7 +103,8 @@
                                 <article
                                     class="bg-white rounded-xl overflow-hidden h-full transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1 border border-slate-100">
                                     @if ($n->cover_path)
-                                        <img src="{{ Storage::url($n->cover_path) }}" class="h-44 w-full object-cover"
+                                        {{-- PERBAIKAN 2: Ganti Storage::url jadi asset('media/...') --}}
+                                        <img src="{{ asset('media/' . $n->cover_path) }}" class="h-44 w-full object-cover"
                                             alt="Cover: {{ $n->title }}">
                                     @else
                                         <div class="h-44 w-full bg-slate-200 flex items-center justify-center">

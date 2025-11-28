@@ -3,16 +3,17 @@
 
 @section('content')
     @php
-        use Illuminate\Support\Facades\Storage;
+        // HAPUS use Illuminate\Support\Facades\Storage; KARENA KITA TIDAK PAKAI LAGI
 
-        // Siapkan data media untuk lightbox (hanya image/video), tanpa caption & credit
+        // Siapkan data media untuk lightbox
         $mediaItems = ($item->media ?? collect())
             ->filter(fn($m) => in_array($m->type, ['image', 'video']))
             ->map(
                 fn($m) => [
                     'id' => $m->id,
                     'type' => $m->type, // image|video
-                    'url' => $m->file_path ? Storage::url($m->file_path) : null,
+                    // PERBAIKAN 1: Ganti Storage::url() jadi asset('media/...')
+                    'url' => $m->file_path ? asset('media/' . $m->file_path) : null,
                     'mime' => $m->mime_type,
                     'embedUrl' => $m->embed_url ?? null,
                 ],
@@ -49,9 +50,9 @@
                         </p>
                     </div>
 
-                    {{-- Gambar Sampul --}}
+                    {{-- PERBAIKAN 2: Gambar Sampul Utama --}}
                     @if ($item->cover_path)
-                        <img src="{{ Storage::url($item->cover_path) }}"
+                        <img src="{{ asset('media/' . $item->cover_path) }}"
                             class="rounded-2xl shadow-lg mt-8 mb-8 w-full aspect-video object-cover"
                             alt="Cover: {{ $item->title }}">
                     @endif
@@ -72,7 +73,9 @@
                                         $isImage = $m->type === 'image' && $m->file_path;
                                         $isVideoFile = $m->type === 'video' && $m->file_path;
                                         $isVideoEmbed = $m->type === 'video' && $m->embed_url;
-                                        $thumbUrl = $m->file_path ? Storage::url($m->file_path) : null;
+
+                                        // PERBAIKAN 3: Thumbnail Dokumentasi
+                                        $thumbUrl = $m->file_path ? asset('media/' . $m->file_path) : null;
                                     @endphp
 
                                     <button type="button"
@@ -182,14 +185,16 @@
                                         <a href="{{ route('public.news.show', $n->slug) }}"
                                             class="group flex items-start gap-4">
                                             @if ($n->cover_path)
-                                                <img src="{{ Storage::url($n->cover_path) }}"
+                                                {{-- PERBAIKAN 4: Gambar Sidebar --}}
+                                                <img src="{{ asset('media/' . $n->cover_path) }}"
                                                     class="w-20 h-16 object-cover rounded-lg flex-shrink-0"
                                                     alt="Cover: {{ $n->title }}">
                                             @else
                                                 <div class="w-20 h-16 bg-slate-200 rounded-lg flex-shrink-0"></div>
                                             @endif
                                             <div>
-                                                <p class="text-xs text-slate-500">{{ $n->published_at?->format('d M Y') }}
+                                                <p class="text-xs text-slate-500">
+                                                    {{ $n->published_at?->format('d M Y') }}
                                                 </p>
                                                 <h4
                                                     class="font-semibold text-sm text-slate-800 line-clamp-2 group-hover:text-indigo-600 transition-colors">
@@ -378,7 +383,7 @@
                             return v ? `https://www.youtube.com/embed/${v}` : raw;
                         }
                         if (u.hostname.includes('youtu.be')) {
-                            return `https://www.youtube.com/embed/${u.pathname.replace('/','')}`;
+                            return `https://www.youtube.com/embed/${u.pathname.replace('/', '')}`;
                         }
                         return raw;
                     } catch {
