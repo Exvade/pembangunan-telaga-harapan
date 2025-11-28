@@ -52,9 +52,7 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse($items as $it)
                             @php
-                                $coverUrl = $it->cover_path
-                                    ? \Illuminate\Support\Facades\Storage::url($it->cover_path)
-                                    : null;
+                                $coverUrl = $it->cover_path ? asset('media/' . $it->cover_path) : null;
                                 $mediaCount = (int) ($it->media_count ?? 0);
                             @endphp
                             <tr class="hover:bg-slate-50/50">
