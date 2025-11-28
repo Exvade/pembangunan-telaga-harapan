@@ -11,7 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->usePublicPath(base_path());
     }
 
     /**
@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if($this->app->environment('production')) {
+        if ($this->app->environment('production')) {
             \URL::forceScheme('https');
         }
         // helper untuk Blade: embed_url()
