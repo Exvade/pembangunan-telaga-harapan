@@ -3,114 +3,175 @@
 @section('content')
     @php
         use Illuminate\Support\Facades\Storage;
+        $isEdit = $item->exists;
+        $title = $isEdit ? 'Edit Berita' : 'Buat Berita Baru';
     @endphp
 
-    <div class="bg-slate-50 min-h-screen p-4 sm:p-6">
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">
-                {{ $item->exists ? 'Edit Berita' : 'Tambah Berita' }}
-            </h1>
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="sm:flex sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ $title }}</h1>
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ $isEdit ? 'Perbarui informasi dan konten berita.' : 'Tulis artikel atau pengumuman baru untuk warga.' }}
+                </p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{{ route('admin.news.index') }}"
+                    class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-700 transition-colors">
+                    <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Kembali ke Daftar
+                </a>
+            </div>
         </div>
+    </div>
 
-        <form method="POST" enctype="multipart/form-data"
-            action="{{ $item->exists ? route('admin.news.update', $item) : route('admin.news.store') }}"
-            x-data="{ isSubmitting: false }" @submit="isSubmitting=true" id="newsForm">
-            @csrf
-            @if ($item->exists)
-                @method('PUT')
-            @endif
+    <form method="POST" enctype="multipart/form-data"
+        action="{{ $isEdit ? route('admin.news.update', $item) : route('admin.news.store') }}" x-data="{ isSubmitting: false }"
+        @submit="isSubmitting=true" id="newsForm">
+        @csrf
+        @if ($isEdit)
+            @method('PUT')
+        @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-                {{-- ================== KIRI: KONTEN ================== --}}
-                <div class="lg:col-span-2 space-y-6">
+            {{-- ================== KOLOM KIRI: KONTEN UTAMA ================== --}}
+            <div class="lg:col-span-2 space-y-6">
 
-                    {{-- Kartu: Judul + Isi --}}
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="space-y-6">
-                            {{-- Judul --}}
-                            <div>
-                                <label for="title" class="block text-sm font-semibold mb-1 text-slate-700">Judul</label>
-                                <input id="title" name="title" value="{{ old('title', $item->title) }}" required
-                                    class="w-full border-2 border-slate-200 rounded-lg text-sm p-2 focus:outline-none focus:border-indigo-500 transition"
-                                    placeholder="Masukkan judul berita...">
-                                @error('title')
-                                    <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                {{-- Kartu: Editor Konten --}}
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 space-y-6">
 
-                            {{-- Isi (Trix) --}}
-                            <div>
-                                <label for="body-content" class="block text-sm font-semibold mb-1 text-slate-700">Isi
-                                    Berita</label>
-                                <div
-                                    class="mt-1 trix-container rounded-lg border-2 border-slate-200 focus-within:border-indigo-500 transition overflow-hidden">
-                                    <input id="body" type="hidden" name="body"
-                                        value="{{ old('body', $item->body) }}">
-                                    <trix-editor input="body" id="body-content" class="trix-content"></trix-editor>
-                                </div>
-                                @error('body')
-                                    <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                        {{-- Judul --}}
+                        <div>
+                            <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Judul
+                                Artikel</label>
+                            <input type="text" id="title" name="title" value="{{ old('title', $item->title) }}"
+                                required
+                                class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm placeholder-slate-400 py-2.5 px-3 transition-shadow"
+                                placeholder="Contoh: Kegiatan Kerja Bakti RT 01...">
+                            @error('title')
+                                <p class="mt-1 text-sm text-rose-600 flex items-center gap-1">
+                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
                         </div>
+
+                        {{-- Trix Editor --}}
+                        <div>
+                            <label for="body-content" class="block text-sm font-semibold text-slate-700 mb-1">Isi
+                                Berita</label>
+                            <div class="prose-sm max-w-none">
+                                <input id="body" type="hidden" name="body" value="{{ old('body', $item->body) }}">
+                                <div
+                                    class="rounded-lg border border-slate-300 shadow-sm overflow-hidden focus-within:ring-1 focus-within:ring-indigo-500 focus-within:border-indigo-500 transition-all">
+                                    <trix-editor input="body" id="body-content"
+                                        class="trix-content min-h-[300px] border-none px-4 py-3 focus:outline-none"></trix-editor>
+                                </div>
+                            </div>
+                            @error('body')
+                                <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- Kartu: Galeri / Dokumentasi --}}
+                <div id="media-section" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-base font-semibold text-slate-800">Galeri Dokumentasi</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Maksimal 10 foto/video (Max 5MB per file)</p>
+                        </div>
+                        <span
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            <span id="mediaCountDisplay">0</span>/10 Item
+                        </span>
                     </div>
 
-                    {{-- Kartu: Dokumentasi Kegiatan --}}
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-semibold text-slate-800">Dokumentasi Kegiatan</h2>
+                    <div class="p-6">
+                        {{-- Upload Area (Dropzone Style) --}}
+                        <div class="mb-6">
+                            <input id="mediaInput" type="file" multiple accept="image/*,video/*" class="hidden"
+                                @change="window.handleUpload()">
 
-                            {{-- Tombol pilih berkas (selalu ada) --}}
-                            <div class="flex items-center gap-2">
-                                <input id="mediaInput" type="file" multiple accept="image/*,video/*" class="hidden"
-                                    @change="/* ditangani oleh handleUpload di script */">
-                                <button type="button"
-                                    class="px-3 py-2 rounded-lg bg-slate-800 text-white text-sm font-semibold hover:bg-slate-900"
-                                    onclick="document.getElementById('mediaInput').click()">
-                                    + Tambah Media
-                                </button>
+                            <div onclick="document.getElementById('mediaInput').click()"
+                                class="group relative block w-full rounded-lg border-2 border-dashed border-slate-300 p-8 text-center hover:border-indigo-500 hover:bg-indigo-50/50 transition-all cursor-pointer">
+                                <div class="flex flex-col items-center justify-center">
+                                    <div
+                                        class="h-10 w-10 text-slate-400 group-hover:text-indigo-500 transition-colors mb-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="w-full h-full">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                        </svg>
+                                    </div>
+                                    <div class="text-sm font-medium text-slate-700">
+                                        <span class="text-indigo-600">Klik untuk upload</span> atau drag and drop
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">PNG, JPG, MP4 up to 5MB</p>
+                                </div>
+                            </div>
+
+                            {{-- Progress Bar --}}
+                            <div id="uploadBar" class="hidden mt-4">
+                                <div class="flex justify-between text-xs text-slate-600 mb-1">
+                                    <span id="uploadBarText">Mengunggah...</span>
+                                    <span id="uploadPercent">0%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                    <div id="uploadBarFill"
+                                        class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                                        style="width: 0%"></div>
+                                </div>
                             </div>
                         </div>
 
-                        {{-- Info batas --}}
-                        <p class="text-xs text-slate-500 mb-4">
-                            Maksimal <span id="maxMedia">10</span> media per berita. Format: gambar (JPG/PNG/WebP/GIF)
-                            &amp; video (MP4/QuickTime/WebM).
-                            Ukuran maks 5&nbsp;MB per file.
-                        </p>
-
-                        {{-- Grid media --}}
-                        <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                            @php $countExisting = 0; @endphp
+                        {{-- Grid Media --}}
+                        <div id="mediaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             @foreach ($item->media ?? collect() as $m)
                                 @php
-                                    $countExisting++;
                                     $url = $m->file_path ? asset('media/' . $m->file_path) : null;
                                     $isImage = $m->type === 'image';
                                     $isVideo = $m->type === 'video';
                                 @endphp
-                                <div class="group relative border border-slate-200 rounded-lg overflow-hidden bg-white"
+                                <div class="group relative aspect-square rounded-lg border border-slate-200 bg-slate-50 overflow-hidden"
                                     data-media-id="{{ $m->id }}">
-                                    {{-- Media preview --}}
                                     @if ($isImage && $url)
-                                        <img src="{{ $url }}" class="w-full h-32 object-cover" alt="media">
+                                        <img src="{{ $url }}"
+                                            class="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                            alt="media">
                                     @elseif($isVideo && $url)
-                                        <video class="w-full h-32 object-cover" preload="metadata" controls>
+                                        <video class="h-full w-full object-cover" preload="metadata">
                                             <source src="{{ $url }}" type="{{ $m->mime_type ?? 'video/mp4' }}">
                                         </video>
-                                    @else
                                         <div
-                                            class="w-full h-32 bg-slate-100 flex items-center justify-center text-xs text-slate-500">
-                                            Media</div>
+                                            class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                                            <svg class="w-8 h-8 text-white opacity-80" fill="currentColor"
+                                                viewBox="0 0 20 20">
+                                                <path
+                                                    d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                            </svg>
+                                        </div>
                                     @endif
 
-                                    {{-- Tombol hapus (client-side remove + tandai untuk delete) --}}
-                                    <button type="button"
-                                        class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 text-rose-600 hover:bg-white shadow"
-                                        title="Hapus media" onclick="removeMediaItem({{ $m->id }})">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
-                                            fill="currentColor">
+                                    {{-- Overlay & Delete Button --}}
+                                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors">
+                                    </div>
+                                    <button type="button" onclick="removeMediaItem({{ $m->id }})"
+                                        class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100"
+                                        title="Hapus media">
+                                        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd"
                                                 d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                                 clip-rule="evenodd" />
@@ -122,152 +183,167 @@
 
                         {{-- Container hidden inputs untuk delete --}}
                         <div id="deleteMediaContainer"></div>
-
-                        {{-- Loader garis upload --}}
-                        <div id="uploadBar" class="hidden mt-4">
-                            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-                                <div id="uploadBarFill" class="h-2 bg-indigo-600 w-0"></div>
-                            </div>
-                            <p id="uploadBarText" class="text-xs text-slate-500 mt-2">Mengunggah...</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ================== KANAN: META ================== --}}
-                <div class="lg:col-span-1 space-y-6">
-                    {{-- Status --}}
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <label for="status" class="block text-sm font-semibold mb-2 text-slate-700">Status</label>
-                        <div class="relative">
-                            <select name="status" id="status"
-                                class="w-full border-2 border-slate-200 rounded-lg text-sm p-2 pr-10 focus:outline-none focus:border-indigo-500 transition appearance-none">
-                                @foreach (['draft' => 'Draft', 'published' => 'Published'] as $k => $v)
-                                    <option value="{{ $k }}" @selected(old('status', $item->status ?? 'draft') === $k)>{{ $v }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                                    fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 3a.75.75 0 01.53.22l3.5 3.5a.75.75 0 01-1.06 1.06L10 4.81 6.53 8.28a.75.75 0 01-1.06-1.06l3.5-3.5A.75.75 0 0110 3zm-3.72 9.28a.75.75 0 011.06 0L10 15.19l2.67-2.91a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 010-1.06z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                        @error('status')
-                            <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Cover --}}
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200" x-data="{ imagePreview: '{{ $item->cover_path ? asset('media/' . $item->cover_path) : '' }}' }">
-                        <label class="block text-sm font-semibold mb-2 text-slate-700">Cover (opsional)</label>
-                        <div @click="$refs.coverInput.click()"
-                            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md cursor-pointer hover:border-indigo-500 transition">
-                            <div class="space-y-1 text-center">
-                                <template x-if="!imagePreview">
-                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none"
-                                        viewBox="0 0 48 48">
-                                        <path
-                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </template>
-                                <template x-if="imagePreview">
-                                    <img :src="imagePreview" class="mx-auto max-h-40 rounded-md object-contain">
-                                </template>
-                                <div class="flex text-sm justify-center text-slate-600">
-                                    <p class="pl-1" x-text="imagePreview ? 'Ganti gambar' : 'Upload file'"></p>
-                                </div>
-                                <p class="text-xs text-slate-500">PNG, JPG, WEBP maks 2MB</p>
-                            </div>
-                        </div>
-                        <input type="file" name="cover" accept="image/*" class="hidden" x-ref="coverInput"
-                            @change="const f=$event.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=(e)=>{ imagePreview=e.target.result }; r.readAsDataURL(f)">
-
-                        @error('cover')
-                            <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Tombol aksi --}}
-                    <div class="flex items-center gap-3">
-                        <button type="submit" :disabled="isSubmitting"
-                            class="w-full inline-flex justify-center items-center gap-2 p-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 transition-colors disabled:bg-indigo-400 disabled:cursor-not-allowed">
-                            <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                    stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor"
-                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                </path>
-                            </svg>
-                            <span>{{ $item->exists ? 'Simpan Perubahan' : 'Simpan' }}</span>
-                        </button>
-                        <a href="{{ route('admin.news.index') }}"
-                            class="w-full p-2 border-2 border-slate-200 rounded-lg text-sm text-center font-semibold bg-white hover:bg-slate-50 transition-colors">Batal</a>
                     </div>
                 </div>
 
             </div>
 
-            {{-- Fallback input untuk create (non-AJAX) --}}
-            <input id="mediaFallbackInput" type="file" name="media_files[]" class="hidden" multiple
-                accept="image/*,video/*">
-            {{-- Container preview sementara untuk create --}}
-            <div id="createPreviewContainer" class="hidden mt-4"></div>
+            {{-- ================== KOLOM KANAN: META & AKSI ================== --}}
+            <div class="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
 
-        </form>
-    </div>
+                {{-- Kartu: Publish --}}
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+                        <h2 class="text-sm font-semibold text-slate-800">Status Publikasi</h2>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label for="status"
+                                class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Pilih
+                                Status</label>
+                            <select name="status" id="status"
+                                class="block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5">
+                                @foreach (['draft' => 'Draft (Simpan Konsep)', 'published' => 'Published (Tayangkan)'] as $k => $v)
+                                    <option value="{{ $k }}" @selected(old('status', $item->status ?? 'draft') === $k)>{{ $v }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-    {{-- ===== CSS kecil utk Trix ===== --}}
+                        <div class="pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button type="submit" :disabled="isSubmitting"
+                                class="w-full inline-flex justify-center items-center gap-2 px-4 py-2.5 border border-transparent text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-wait shadow-sm transition-all">
+                                <svg x-show="isSubmitting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10"
+                                        stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                {{ $isEdit ? 'Simpan Perubahan' : 'Terbitkan Berita' }}
+                            </button>
+                            <a href="{{ route('admin.news.index') }}"
+                                class="w-full inline-flex justify-center items-center px-4 py-2.5 border border-slate-300 text-sm font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                                Batal
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Kartu: Cover Image --}}
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+                    x-data="{ imagePreview: '{{ $item->cover_path ? asset('media/' . $item->cover_path) : '' }}' }">
+                    <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+                        <h2 class="text-sm font-semibold text-slate-800">Gambar Sampul</h2>
+                    </div>
+                    <div class="p-6">
+                        <div @click="$refs.coverInput.click()"
+                            class="group relative w-full h-48 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-indigo-400 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden">
+
+                            {{-- Placeholder --}}
+                            <div x-show="!imagePreview" class="text-center p-4">
+                                <svg class="mx-auto h-10 w-10 text-slate-400 group-hover:text-indigo-500 transition-colors"
+                                    stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path
+                                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                                <p class="mt-2 text-xs font-medium text-slate-600">Upload Cover</p>
+                            </div>
+
+                            {{-- Preview Image --}}
+                            <img x-show="imagePreview" :src="imagePreview"
+                                class="absolute inset-0 w-full h-full object-cover">
+
+                            {{-- Hover Overlay --}}
+                            <div x-show="imagePreview"
+                                class="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                <p
+                                    class="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
+                                    Ganti Gambar</p>
+                            </div>
+                        </div>
+
+                        <input type="file" name="cover" accept="image/*" class="hidden" x-ref="coverInput"
+                            @change="const f=$event.target.files[0]; if(f){ const r=new FileReader(); r.onload=(e)=>{ imagePreview=e.target.result }; r.readAsDataURL(f) }">
+
+                        <p class="mt-2 text-xs text-center text-slate-500">
+                            Disarankan rasio 16:9, Max 2MB.
+                        </p>
+                        @error('cover')
+                            <p class="mt-2 text-xs text-center text-rose-600 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        {{-- Fallback input untuk create (non-AJAX) --}}
+        <input id="mediaFallbackInput" type="file" name="media_files[]" class="hidden" multiple
+            accept="image/*,video/*">
+
+        {{-- Container preview sementara untuk create (hidden, logic only) --}}
+        <div id="createPreviewContainer" class="hidden"></div>
+    </form>
+
+
+    {{-- Trix Custom Style --}}
     <style>
-        .trix-container trix-editor {
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0;
-        }
-
-        .trix-content {
-            min-height: 300px;
-            height: auto;
-            padding: .75rem;
-        }
-
         .trix-toolbar {
             background-color: #f8fafc;
             border-bottom: 1px solid #e2e8f0;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .trix-content {
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+
+        .trix-button {
+            background-color: white !important;
+            border: 1px solid #cbd5e1 !important;
+        }
+
+        .trix-button.trix-active {
+            background-color: #e0e7ff !important;
+            border-color: #6366f1 !important;
+            color: #4338ca !important;
         }
     </style>
 
-    {{-- ====== SCRIPT: definisi handleUpload & removeMediaItem ====== --}}
+    {{-- SCRIPT MEDIA HANDLING (Sama, dengan sedikit penyesuaian UI) --}}
     <script>
         // Konstanta
         const MAX_MEDIA = 10;
-        const ALLOWED_MIME = [
-            'image/jpeg', 'image/png', 'image/webp', 'image/gif',
-            'video/mp4', 'video/quicktime', 'video/webm'
+        const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime',
+            'video/webm'
         ];
 
-        // Elemen yang dipakai
+        // Elemen UI
         const mediaInput = document.getElementById('mediaInput');
         const mediaGrid = document.getElementById('mediaGrid');
         const uploadBar = document.getElementById('uploadBar');
         const uploadBarFill = document.getElementById('uploadBarFill');
         const uploadBarText = document.getElementById('uploadBarText');
+        const uploadPercent = document.getElementById('uploadPercent');
+        const mediaCountDisplay = document.getElementById('mediaCountDisplay');
         const deleteHiddenBox = document.getElementById('deleteMediaContainer');
-        const createFallback = document.getElementById('mediaFallbackInput');
-        const createPrevWrap = document.getElementById('createPreviewContainer');
+        const fallbackInput = document.getElementById('mediaFallbackInput');
 
-        // Hitung existing
-        function currentMediaCount() {
-            return mediaGrid.querySelectorAll('[data-media-id]').length +
-                mediaGrid.querySelectorAll('[data-temp="1"]').length;
+        // Update Counter
+        function updateMediaCount() {
+            const count = mediaGrid.querySelectorAll('[data-media-id], [data-temp]').length;
+            if (mediaCountDisplay) mediaCountDisplay.textContent = count;
         }
+        updateMediaCount(); // Init
 
-        // Preview helper
+        // Build HTML Card
         function buildCard({
             id = null,
             url = '',
@@ -275,91 +351,83 @@
             mime = ''
         }) {
             const wrap = document.createElement('div');
-            wrap.className = 'group relative border border-slate-200 rounded-lg overflow-hidden bg-white';
+            wrap.className =
+                'group relative aspect-square rounded-lg border border-slate-200 bg-slate-50 overflow-hidden animate-fade-in';
             if (id) wrap.dataset.mediaId = id;
             else wrap.dataset.temp = '1';
 
             let inner = '';
             if (type === 'image') {
-                inner += `<img src="${url}" class="w-full h-32 object-cover" alt="media">`;
+                inner +=
+                    `<img src="${url}" class="h-full w-full object-cover transition-transform group-hover:scale-105" alt="media">`;
             } else if (type === 'video') {
-                inner +=
-                    `<video class="w-full h-32 object-cover" preload="metadata" controls><source src="${url}" type="${mime || 'video/mp4'}"></video>`;
-            } else {
-                inner +=
-                    `<div class="w-full h-32 bg-slate-100 flex items-center justify-center text-xs text-slate-500">Media</div>`;
+                inner += `<video class="h-full w-full object-cover"><source src="${url}" type="${mime || 'video/mp4'}"></video>
+                          <div class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                              <svg class="w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                          </div>`;
             }
-            // tombol hapus hanya untuk media yang sudah punya id (tersimpan)
+
             inner += `
-    <button type="button"
-            class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 text-rose-600 hover:bg-white shadow"
-            title="Hapus media"
-            ${id ? `onclick="removeMediaItem(${id})"` : `onclick="this.closest('[data-temp]').remove()"`}>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-      </svg>
-    </button>
-  `;
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                <button type="button" 
+                    onclick="${id ? `removeMediaItem(${id})` : `this.closest('[data-temp]').remove(); updateMediaCount();`}"
+                    class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100" title="Hapus">
+                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                </button>`;
+
             wrap.innerHTML = inner;
             return wrap;
         }
 
-        // Hapus visual + tandai untuk delete (tanpa AJAX)
+        // Remove Handler
         window.removeMediaItem = function(id) {
             const card = mediaGrid.querySelector(`[data-media-id="${id}"]`);
-            if (card) card.remove();
-            // sisipkan hidden input agar dihapus saat submit
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'delete_media_ids[]';
-            input.value = String(id);
-            deleteHiddenBox.appendChild(input);
+            if (card) {
+                card.remove();
+                updateMediaCount();
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'delete_media_ids[]';
+                input.value = String(id);
+                deleteHiddenBox.appendChild(input);
+            }
         };
 
-        // ===== UPLOAD HANDLER =====
+        // Upload Handler
         window.handleUpload = async function() {
             const files = Array.from(mediaInput.files || []);
             if (!files.length) return;
 
-            // Halaman create? -> fallback non-AJAX
-            const IS_EDIT = {{ $item->exists ? 'true' : 'false' }};
+            const IS_EDIT = {{ $isEdit ? 'true' : 'false' }};
 
-            // Filter mime & hitung batas
+            // Validasi Mime & Count
             const valid = files.filter(f => ALLOWED_MIME.includes(f.type));
-            const rejected = files.filter(f => !ALLOWED_MIME.includes(f.type));
-            if (rejected.length) {
-                alert('Hanya gambar (jpg/png/webp/gif) dan video (mp4/mov/webm) yang diperbolehkan.');
-            }
+            if (files.length !== valid.length) alert(
+                'Beberapa file ditolak. Hanya gambar dan video yang diperbolehkan.');
 
-            const existing = currentMediaCount();
-            const allowedCount = Math.max(0, MAX_MEDIA - existing);
-            if (allowedCount <= 0) {
-                alert('Batas media sudah mencapai 10 item.');
+            const currentCount = mediaGrid.querySelectorAll('[data-media-id], [data-temp]').length;
+            const allowed = Math.max(0, MAX_MEDIA - currentCount);
+
+            if (allowed <= 0) {
+                alert('Batas maksimal 10 media tercapai.');
                 mediaInput.value = '';
                 return;
             }
 
-            const toUpload = valid.slice(0, allowedCount);
+            const toUpload = valid.slice(0, allowed);
 
+            // CREATE MODE: Client-side Preview only
             if (!IS_EDIT) {
-                // CREATE PAGE: tampilkan preview dan tambahkan ke input fallback
-                createPrevWrap.classList.remove('hidden');
-                toUpload.forEach(f => {
-                    // tambahkan ke fallback input
-                    // sayangnya kita tidak bisa programmatically append ke FileList; jadi kita pakai input asli (name="media_files[]") yg memang ada
-                    // Solusi: ganti id mediaFallbackInput di atas menjadi input "media_files[]" dan kliknya diarahkan ke situ jika create.
-                });
-
-                // Trik: saat CREATE, kita ganti input target agar file benar-benar ikut terkirim.
-                // Pindahkan file2 dari mediaInput ke input name="media_files[]"
+                // Populate fallback input for standard form submission
                 const dt = new DataTransfer();
-                const fallbackEl = document.getElementById('mediaFallbackInput');
-                const dt2 = new DataTransfer();
-                // masukkan file yang valid ke fallbackEl
-                toUpload.forEach(f => dt2.items.add(f));
-                fallbackEl.files = dt2.files;
+                // Ambil file yg sudah ada di fallback (jika user upload bertahap)
+                if (fallbackInput.files) {
+                    Array.from(fallbackInput.files).forEach(f => dt.items.add(f));
+                }
+                toUpload.forEach(f => dt.items.add(f));
+                fallbackInput.files = dt.files;
 
-                // Tampilkan preview card sementara (client-side)
+                // Show Preview
                 toUpload.forEach(f => {
                     const url = URL.createObjectURL(f);
                     const type = f.type.startsWith('image/') ? 'image' : 'video';
@@ -370,21 +438,21 @@
                         mime: f.type
                     }));
                 });
-
+                updateMediaCount();
                 mediaInput.value = '';
                 return;
             }
 
-            // EDIT PAGE: AJAX upload
+            // EDIT MODE: AJAX Upload
             const formData = new FormData();
             toUpload.forEach(f => formData.append('media_files[]', f));
 
+            // UI Progress
             uploadBar.classList.remove('hidden');
-            uploadBarFill.style.width = '0%';
-            uploadBarText.textContent = 'Mengunggah...';
+            uploadBarFill.style.width = '10%';
 
             try {
-                const res = await fetch("{{ $item->exists ? route('admin.news.media.store', $item) : '' }}", {
+                const res = await fetch("{{ $isEdit ? route('admin.news.media.store', $item) : '' }}", {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -392,17 +460,11 @@
                     body: formData,
                 });
 
-                if (!res.ok) {
-                    const text = await res.text().catch(() => '');
-                    throw new Error(text || 'Gagal mengunggah.');
-                }
-
+                if (!res.ok) throw new Error('Gagal mengunggah.');
                 const json = await res.json();
-                if (!json.ok) {
-                    throw new Error(json.error || 'Gagal mengunggah.');
-                }
+                if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan.');
 
-                // Tambah ke grid
+                // Append new items
                 (json.items || []).forEach(it => {
                     mediaGrid.appendChild(buildCard({
                         id: it.id,
@@ -412,27 +474,18 @@
                     }));
                 });
 
+                // Success UI
                 uploadBarFill.style.width = '100%';
-                uploadBarText.textContent = 'Selesai.';
-                setTimeout(() => uploadBar.classList.add('hidden'), 600);
+                uploadPercent.textContent = '100%';
+                updateMediaCount();
+                setTimeout(() => uploadBar.classList.add('hidden'), 1000);
 
             } catch (err) {
-                alert(err.message || 'Upload gagal.');
+                alert(err.message);
                 uploadBar.classList.add('hidden');
             } finally {
                 mediaInput.value = '';
             }
         };
-
-        // Hubungkan event change ke handler (agar tak tergantung inline attribute)
-        document.addEventListener('DOMContentLoaded', () => {
-            if (mediaInput) {
-                mediaInput.addEventListener('change', () => window.handleUpload());
-            }
-        });
     </script>
-
-    {{-- Trix (CDN) jika belum dimasukkan di layout --}}
-    <link rel="stylesheet" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
-    <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
 @endsection
