@@ -353,7 +353,7 @@
                         $bidang = [
                             'Perencanaan' => [
                                 ['nama' => 'Ali Wahyudi', 'foto' => 'ali.jpg'], // Contoh ada foto
-                                ['nama' => 'Rifan', 'foto' => ''], // Contoh tidak ada foto
+                                ['nama' => 'Irpan Ariawan', 'foto' => ''], // Contoh tidak ada foto
                                 ['nama' => 'Latif', 'foto' => ''],
                                 ['nama' => 'Sunardi', 'foto' => '/sunardi.jpg'],
                                 ['nama' => 'Ahmad Munasor.', 'foto' => '/nasor.jpg'],
