@@ -145,110 +145,281 @@
     </section>
 
     {{-- STRUKTUR ORGANISASI --}}
-    <section class="py-16 sm:py-20 bg-slate-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold tracking-tight text-slate-800">Struktur Organisasi</h2>
-                <p class="mt-2 text-slate-600 max-w-xl mx-auto">Tim yang berdedikasi untuk mewujudkan cita-cita bersama di
-                    Telaga Harapan.</p>
+    <section class="py-16 bg-slate-50 overflow-hidden">
+        <div class="container mx-auto px-4 relative">
+
+            {{-- Background Decoration (Optional for modern feel) --}}
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-3xl -z-10 opacity-60 pointer-events-none">
             </div>
 
-            <div class="max-w-6xl mx-auto space-y-16">
-                {{-- DEWAN PENASEHAT --}}
+            {{-- Header Section --}}
+            <div class="text-center mb-12 relative z-10">
+                <span
+                    class="text-blue-600 font-bold tracking-wider text-xs uppercase bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Tim
+                    Kami</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mt-3 mb-2">Struktur Organisasi</h2>
+                <p class="text-slate-600 max-w-lg mx-auto">Dedikasi dan kolaborasi untuk kemajuan Telaga Harapan.</p>
+            </div>
+
+            <div class="max-w-7xl mx-auto space-y-12 relative z-10">
+
+                {{-- 1. DEWAN PENASEHAT (Modern Compact Grid) --}}
                 <div>
-                    <h3 class="text-xl font-semibold text-slate-700 text-center mb-6">Dewan Penasehat</h3>
+                    <h3
+                        class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-center gap-4">
+                        <span class="h-px w-8 bg-slate-300"></span> Dewan Penasehat <span
+                            class="h-px w-8 bg-slate-300"></span>
+                    </h3>
+
+                    @php
+                        $penasehat = [
+                            [
+                                'jabatan' => 'Kadus V',
+                                'nama' => 'Jaenudin Gofur',
+                                'foto' => '/jaenudin-gofur.jpg', // <-- Isi path foto di sini (simpan di folder public)
+                            ],
+                            [
+                                'jabatan' => 'RW 011',
+                                'nama' => 'Asep Ruhyana',
+                                'foto' => '/asep-ruhyana.jpg',
+                            ],
+                            [
+                                'jabatan' => 'RW 012',
+                                'nama' => 'Ketua RW 012',
+                                'foto' => '', // <-- Kosongkan jika belum ada foto (nanti otomatis jadi inisial)
+                            ],
+                            [
+                                'jabatan' => 'RW 018',
+                                'nama' => 'Ketua RW 018',
+                                'foto' => '',
+                            ],
+                            [
+                                'jabatan' => 'RW 019',
+                                'nama' => 'Ketua RW 019',
+                                'foto' => '',
+                            ],
+                        ];
+                    @endphp
+
                     <div class="flex flex-wrap justify-center gap-3">
-                        <span
-                            class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm font-medium text-slate-700">Kepala
-                            Dusun V</span>
-                        <span
-                            class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm font-medium text-slate-700">Ketua
-                            RW 011</span>
-                        <span
-                            class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm font-medium text-slate-700">Ketua
-                            RW 012</span>
-                        <span
-                            class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm font-medium text-slate-700">Ketua
-                            RW 018</span>
-                        <span
-                            class="bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm font-medium text-slate-700">Ketua
-                            RW 019</span>
-                    </div>
-                </div>
+                        @foreach ($penasehat as $p)
+                            <div
+                                class="group bg-white border border-slate-200 hover:border-blue-300 rounded-full pl-2 pr-5 py-2 flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-300 cursor-default">
 
-                {{-- PIMPINAN INTI --}}
-                <div>
-                    <h3 class="text-xl font-semibold text-slate-700 text-center mb-8">Pengurus Inti</h3>
-                    {{-- Ketua --}}
-                    <div class="flex justify-center items-center md:gap-9 gap-4">
-                        <div class="max-w-xs text-center mb-8">
-                            <img src="https://ui-avatars.com/api/?name=Eko+Pitoyo&background=cbd5e1&color=1e293b&size=128"
-                                alt="Eko Pitoyo" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
-                            <h4 class="text-lg font-semibold text-slate-800">Eko Pitoyo</h4>
-                            {{-- WARNA DIUBAH --}}
-                            <p class="text-sm text-blue-600 font-semibold">Ketua Team</p>
-                        </div>
-                        <div class="max-w-xs text-center mb-8">
-                            <img src="https://ui-avatars.com/api/?name=Sujito&background=cbd5e1&color=1e293b&size=128"
-                                alt="Sujito" class="w-28 h-28 rounded-full mx-auto mb-3 object-cover shadow-md">
-                            <h4 class="text-lg font-semibold text-slate-800">Sujito</h4>
-                            {{-- WARNA DIUBAH --}}
-                            <p class="text-sm text-blue-600 font-semibold">Wakil Ketua Team</p>
-                        </div>
-                    </div>
+                                {{-- LOGIKA FOTO DI SINI --}}
+                                <img src="{{ !empty($p['foto']) ? asset($p['foto']) : 'https://ui-avatars.com/api/?name=' . urlencode($p['nama']) . '&background=f1f5f9&color=475569&size=64&font-size=0.4' }}"
+                                    alt="{{ $p['nama'] }}"
+                                    class="w-10 h-10 rounded-full object-cover ring-2 ring-white group-hover:ring-blue-100 transition-all">
 
-                    {{-- Bendahara, Sekretaris --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
-                            <h4 class="font-semibold text-slate-800 mb-2">Bendahara</h4>
-                            <p class="text-sm text-slate-600">RD. Riana Gustafa H.</p>
-                            <p class="text-sm text-slate-600">Sutoyo</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
-                            <h4 class="font-semibold text-slate-800 mb-2">Sekretaris</h4>
-                            <p class="text-sm text-slate-600">Doni Syhono</p>
-                            <p class="text-sm text-slate-600">Bagas Kakatya H.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- KOORDINATOR BIDANG --}}
-                <div>
-                    <h3 class="text-xl font-semibold text-slate-700 text-center mb-8">Koordinator Bidang</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        @php
-                            $bidang = [
-                                'Perencanaan' => ['Ali Wahyudi', 'Rifan', 'Latif', 'Sunardi', 'Nasor', 'Wisnu'],
-                                'Perlengkapan & Pelaksanaan' => ['Jozhi Ponco', 'Slamet Rahat', 'Santoso'],
-                                'Dana Usaha' => [
-                                    'Singgih',
-                                    'Fauzi',
-                                    'Jazuri',
-                                    'Nasrudin',
-                                    'Josan',
-                                    'Ust. Nur Hamidz Syarif',
-                                ],
-                            ];
-                        @endphp
-                        @foreach ($bidang as $namaBidang => $anggota)
-                            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                                <h4 class="font-semibold text-slate-800 mb-4">Bidang {{ $namaBidang }}</h4>
-                                <div class="space-y-4">
-                                    @foreach ($anggota as $nama)
-                                        <div class="flex items-center gap-3">
-                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($nama) }}&background=e2e8f0&color=334155&size=64"
-                                                alt="{{ $nama }}" class="w-10 h-10 rounded-full object-cover">
-                                            <span class="text-sm text-slate-600">{{ $nama }}</span>
-                                        </div>
-                                    @endforeach
+                                <div class="flex flex-col text-left">
+                                    <span
+                                        class="text-xs font-bold text-slate-700 group-hover:text-blue-700 transition-colors">
+                                        {{ $p['nama'] }}
+                                    </span>
+                                    <span class="text-[10px] uppercase font-semibold text-slate-400">
+                                        {{ $p['jabatan'] }}
+                                    </span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
+
+                {{-- 2. PENGURUS INTI (Hierarchical Layout) --}}
+                <div class="space-y-6">
+
+                    {{-- Level 1: Ketua & Wakil (Hero Cards) --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        {{-- Ketua --}}
+                        <div
+                            class="relative group bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <svg class="w-20 h-20 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                                </svg>
+                            </div>
+                            <img src="/eko-pitoyo.jpg"
+                                class="w-20 h-20 rounded-full shadow-md ring-4 ring-blue-50 group-hover:ring-blue-100 transition-all z-10">
+                            <div class="z-10">
+                                <div class="text-xs font-bold text-blue-600 uppercase tracking-wide mb-1">Ketua Team</div>
+                                <h4 class="text-xl font-bold text-slate-800">Eko Pitoyo</h4>
+                                <p class="text-sm text-slate-500 mt-1">Memimpin visi dan misi.</p>
+                            </div>
+                        </div>
+
+                        {{-- Wakil --}}
+                        <div
+                            class="relative group bg-white rounded-2xl p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 flex items-center gap-5 overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <svg class="w-20 h-20 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                                </svg>
+                            </div>
+                            <img src="/sujito.jpg"
+                                class="w-20 h-20 rounded-full shadow-md ring-4 ring-blue-50 group-hover:ring-blue-100 transition-all z-10">
+                            <div class="z-10">
+                                <div class="text-xs font-bold text-blue-500 uppercase tracking-wide mb-1">Wakil Ketua</div>
+                                <h4 class="text-xl font-bold text-slate-800">Sujito</h4>
+                                <p class="text-sm text-slate-500 mt-1">Mendukung operasional utama.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Level 2: Sekretaris & Bendahara (Unified Grid) --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+                        {{-- Sekretaris --}}
+                        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative">
+                            <div class="absolute -top-3 left-4">
+                                <span
+                                    class="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Sekretaris</span>
+                            </div>
+                            {{-- DEFINISI DATA --}}
+                            @php
+                                $listSekretaris = [
+                                    [
+                                        'nama' => 'Doni Sihono',
+                                        'foto' => '/doni.jpg', // <-- Ganti dengan path foto asli
+                                    ],
+                                    [
+                                        'nama' => 'Bagas K.H.',
+                                        'foto' => '', // <-- Kosongkan jika tidak ada foto
+                                    ],
+                                ];
+                            @endphp
+
+                            {{-- TAMPILAN --}}
+                            <div class="flex flex-col sm:flex-row gap-4 mt-2">
+                                @foreach ($listSekretaris as $s)
+                                    <div
+                                        class="flex items-center gap-3 flex-1 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+
+                                        {{-- LOGIKA GAMBAR --}}
+                                        <img src="{{ !empty($s['foto']) ? asset($s['foto']) : 'https://ui-avatars.com/api/?name=' . urlencode($s['nama']) . '&background=f1f5f9&color=475569&size=48' }}"
+                                            class="w-10 h-10 rounded-full object-cover">
+
+                                        <span class="text-sm font-semibold text-slate-700">{{ $s['nama'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Bendahara --}}
+                        <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative">
+                            <div class="absolute -top-3 left-4">
+                                <span
+                                    class="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Bendahara</span>
+                            </div>
+                            @php
+                                $listBendahara = [
+                                    [
+                                        'nama' => 'Rian Gustafa',
+                                        'foto' => 'rian.jpg', // <-- Isi path foto jika ada
+                                    ],
+                                    [
+                                        'nama' => 'Sutoyo',
+                                        'foto' => '/sutoyo.jpg', // <-- Kosongkan jika belum ada foto
+                                    ],
+                                ];
+                            @endphp
+                            <div class="flex flex-col sm:flex-row gap-4 mt-2">
+                                @foreach ($listBendahara as $b)
+                                    <div
+                                        class="flex items-center gap-3 flex-1 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+
+                                        {{-- LOGIKA FOTO --}}
+                                        <img src="{{ !empty($b['foto']) ? asset($b['foto']) : 'https://ui-avatars.com/api/?name=' . urlencode($b['nama']) . '&background=f1f5f9&color=475569&size=48' }}"
+                                            class="w-10 h-10 rounded-full object-cover">
+
+                                        <span class="text-sm font-semibold text-slate-700">{{ $b['nama'] }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 3. KOORDINATOR BIDANG (Cards Grid) --}}
+                <div>
+                    <h3
+                        class="text-center text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 flex items-center justify-center gap-4 mt-8">
+                        <span class="h-px w-8 bg-slate-300"></span> Bidang & Anggota <span
+                            class="h-px w-8 bg-slate-300"></span>
+                    </h3>
+
+                    @php
+                        $bidang = [
+                            'Perencanaan' => [
+                                ['nama' => 'Ali Wahyudi', 'foto' => 'ali.jpg'], // Contoh ada foto
+                                ['nama' => 'Rifan', 'foto' => ''], // Contoh tidak ada foto
+                                ['nama' => 'Latif', 'foto' => ''],
+                                ['nama' => 'Sunardi', 'foto' => '/sunardi.jpg'],
+                                ['nama' => 'Ahmad Munasor.', 'foto' => '/nasor.jpg'],
+                                ['nama' => 'Wisnu', 'foto' => ''],
+                            ],
+                            'Perlengkapan' => [
+                                ['nama' => 'Jozi Ponco', 'foto' => 'jozi.jpg'],
+                                ['nama' => 'Slamet Rahat', 'foto' => '/rahat.jpg'],
+                                ['nama' => 'Santoso', 'foto' => ''],
+                            ],
+                            'Dana Usaha' => [
+                                ['nama' => 'Singgih Waseso', 'foto' => '/singgih.jpg'],
+                                ['nama' => 'Fauzi', 'foto' => '/fauzi.jpg'],
+                                ['nama' => 'Jazuri', 'foto' => '/jazuri.jpg'],
+                                ['nama' => 'Nasrudin', 'foto' => ''],
+                                ['nama' => 'Josan', 'foto' => ''],
+                                ['nama' => 'Ust. Nurhamid Syarif.', 'foto' => ''],
+                            ],
+                        ];
+                    @endphp
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        @foreach ($bidang as $namaBidang => $listAnggota)
+                            {{-- Ubah variabel jadi $listAnggota --}}
+                            <div
+                                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+
+                                {{-- HEADER KARTU --}}
+                                <div class="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-base">{{ $namaBidang }}</h4>
+                                        <span class="text-xs text-slate-500">{{ count($listAnggota) }} Anggota</span>
+                                    </div>
+                                </div>
+
+                                {{-- LIST ANGGOTA --}}
+                                <ul class="space-y-3">
+                                    @foreach ($listAnggota as $anggota)
+                                        {{-- Loop array baru --}}
+                                        <li class="flex items-center gap-3">
+
+                                            {{-- LOGIKA FOTO --}}
+                                            <img src="{{ !empty($anggota['foto']) ? asset($anggota['foto']) : 'https://ui-avatars.com/api/?name=' . urlencode($anggota['nama']) . '&background=f1f5f9&color=64748b&size=32' }}"
+                                                class="w-6 h-6 rounded-full object-cover">
+
+                                            <span class="text-sm text-slate-600 font-medium">{{ $anggota['nama'] }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
+
+
 
     <section class="relative overflow-hidden bg-slate-50">
         <div aria-hidden="true" class="pointer-events-none absolute inset-0">
