@@ -322,6 +322,7 @@
         // Konstanta
         const MAX_MEDIA = 10;
         const MAX_SIZE_MB = 30;
+        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
         const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime',
             'video/webm'
         ];
