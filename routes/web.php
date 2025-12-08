@@ -39,8 +39,8 @@ Route::middleware(['auth', 'role:admin'])
             ->middleware('auth');
         Route::delete('news/{news}/media/{media}', [AdminNewsController::class, 'mediaDestroy'])
             ->name('news.media.destroy');
-        Route::post('news/media/temp', [App\Http\Controllers\Admin\NewsController::class, 'storeTempMedia'])
-            ->name('admin.news.media.temp');
+        Route::post('news/media/temp', [AdminNewsController::class, 'storeTempMedia'])
+            ->name('news.media.temp');
 
         Route::resource('categories', AdminCategoryController::class)->except(['show']);
         Route::resource('incomes', AdminIncomeController::class)->except(['show']);
