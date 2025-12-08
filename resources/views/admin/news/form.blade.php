@@ -105,7 +105,7 @@
                             <input id="mediaInput" type="file" multiple accept="image/*,video/*" class="hidden"
                                 @change="window.handleUpload()">
 
-                            <div onclick="document.getElementById('mediaInput').click()"
+                            <div id="dropzoneArea" onclick="document.getElementById('mediaInput').click()"
                                 class="group relative block w-full rounded-lg border-2 border-dashed border-slate-300 p-8 text-center hover:border-indigo-500 hover:bg-indigo-50/50 transition-all cursor-pointer">
                                 <div class="flex flex-col items-center justify-center">
                                     <div
@@ -320,16 +320,14 @@
 
     {{-- SCRIPT MEDIA HANDLING (Sama, dengan sedikit penyesuaian UI) --}}
     <script>
-        const tempFilesContainer = document.getElementById('tempFilesContainer');
-        // Konstanta
+        // ================= KONFIGURASI =================
         const MAX_MEDIA = 10;
         const MAX_SIZE_MB = 30;
-        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
         const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime',
             'video/webm'
         ];
 
-        // Elemen UI
+        // ================= ELEMENT UI =================
         const mediaInput = document.getElementById('mediaInput');
         const mediaGrid = document.getElementById('mediaGrid');
         const uploadBar = document.getElementById('uploadBar');
@@ -337,17 +335,22 @@
         const uploadBarText = document.getElementById('uploadBarText');
         const uploadPercent = document.getElementById('uploadPercent');
         const mediaCountDisplay = document.getElementById('mediaCountDisplay');
+        const tempFilesContainer = document.getElementById('tempFilesContainer');
         const deleteHiddenBox = document.getElementById('deleteMediaContainer');
-        const fallbackInput = document.getElementById('mediaFallbackInput');
+        const dropzoneArea = document.getElementById('dropzoneArea');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
-        // Update Counter
+        // Flag Global untuk mencegah intervensi user saat upload
+        let isUploading = false;
+
+        // ================= FUNGSI BANTUAN =================
+
         function updateMediaCount() {
-            const count = mediaGrid.querySelectorAll('[data-media-id], [data-temp]').length;
+            const count = mediaGrid.querySelectorAll('[data-media-id], [data-temp-path]').length;
             if (mediaCountDisplay) mediaCountDisplay.textContent = count;
         }
         updateMediaCount(); // Init
 
-        // Build HTML Card
         function buildCard({
             id = null,
             url = '',
@@ -358,9 +361,9 @@
             const wrap = document.createElement('div');
             wrap.className =
                 'group relative aspect-square rounded-lg border border-slate-200 bg-slate-50 overflow-hidden animate-fade-in';
+
             if (tempPath) wrap.dataset.tempPath = tempPath;
             if (id) wrap.dataset.mediaId = id;
-            else wrap.dataset.temp = '1';
 
             let inner = '';
             if (type === 'image') {
@@ -368,16 +371,16 @@
                     `<img src="${url}" class="h-full w-full object-cover transition-transform group-hover:scale-105" alt="media">`;
             } else if (type === 'video') {
                 inner += `<video class="h-full w-full object-cover"><source src="${url}" type="${mime || 'video/mp4'}"></video>
-                          <div class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
-                              <svg class="w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                          </div>`;
+                      <div class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                          <svg class="w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+                      </div>`;
             }
 
             inner += `
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
             <button type="button" 
                 onclick="removeTempOrPermanent(this, ${id})"
-                class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100">
+                class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100" title="Hapus">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
             </button>`;
 
@@ -385,18 +388,21 @@
             return wrap;
         }
 
+        window.removeMediaItem = function(id) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'delete_media_ids[]';
+            input.value = String(id);
+            deleteHiddenBox.appendChild(input);
+        };
+
         window.removeTempOrPermanent = function(btn, id) {
+            if (isUploading) return; // Cegah hapus saat upload berjalan
+
             const card = btn.closest('div.group');
-
-            // Jika item permanen (Edit mode)
             if (id) {
-                removeMediaItem(id); // Panggil fungsi lama
-                return;
-            }
-
-            // Jika item temp (Create mode)
-            if (card.dataset.tempPath) {
-                // Hapus input hidden yang sesuai
+                removeMediaItem(id);
+            } else if (card.dataset.tempPath) {
                 const input = document.querySelector(`input[value*="${card.dataset.tempPath}"]`);
                 if (input) input.remove();
             }
@@ -404,33 +410,25 @@
             updateMediaCount();
         };
 
-        // Remove Handler
-        window.removeMediaItem = function(id) {
-            const card = mediaGrid.querySelector(`[data-media-id="${id}"]`);
-            if (card) {
-                card.remove();
-                updateMediaCount();
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'delete_media_ids[]';
-                input.value = String(id);
-                deleteHiddenBox.appendChild(input);
-            }
-        };
+        // ================= FUNGSI UTAMA HANDLER =================
 
-        // Upload Handler
         window.handleUpload = async function() {
+            // 1. CEK STATUS LOCK
+            if (isUploading) return;
+
             const files = Array.from(mediaInput.files || []);
             if (!files.length) return;
 
-            const IS_EDIT = {{ $isEdit ? 'true' : 'false' }};
-            const MAX_SIZE_MB = 30; // Batas 30MB
+            // Reset Input agar change event bisa trigger lagi untuk file sama nanti
+            // Tapi kita simpan dulu referensi files nya
 
-            // 1. Validasi Tipe & Size
+            const IS_EDIT = {{ $isEdit ? 'true' : 'false' }};
+
+            // 2. FILTER & VALIDASI
             const validFiles = [];
             for (const f of files) {
                 if (!ALLOWED_MIME.includes(f.type)) {
-                    alert(`File ${f.name} ditolak. Format tidak sesuai.`);
+                    alert(`File ${f.name} ditolak. Format salah.`);
                     continue;
                 }
                 if (f.size > (MAX_SIZE_MB * 1024 * 1024)) {
@@ -445,108 +443,121 @@
                 return;
             }
 
-            // 2. Cek Limit Jumlah
-            const currentCount = mediaGrid.children.length;
+            const currentCount = mediaGrid.querySelectorAll('[data-media-id], [data-temp-path]').length;
             if (currentCount + validFiles.length > MAX_MEDIA) {
-                alert('Melebihi batas maksimal 10 media.');
+                alert(`Maksimal 10 media. Anda hanya bisa menambah ${Math.max(0, MAX_MEDIA - currentCount)} lagi.`);
                 mediaInput.value = '';
                 return;
             }
 
-            // 3. PROSES UPLOAD (AJAX UNTUK KEDUANYA)
+            // 3. LOCK INTERFACE
+            isUploading = true;
+            mediaInput.disabled = true; // Matikan input file
+            dropzoneArea.classList.add('cursor-not-allowed', 'opacity-70'); // Visual disable
+            loadingOverlay.classList.remove('hidden'); // Tampilkan overlay loading di dropzone
+            loadingOverlay.classList.add('flex');
+
+            // Reset Progress Bar Visual
             uploadBar.classList.remove('hidden');
             uploadBarFill.style.width = '0%';
-            uploadBarText.textContent = 'Mengunggah media...';
+            uploadPercent.textContent = '0%';
+            uploadBarText.textContent = `Mengunggah 0/${validFiles.length} item...`;
 
             let completed = 0;
             const total = validFiles.length;
             const uploadUrl = IS_EDIT ?
-                "{{ $isEdit ? route('admin.news.media.store', $item) : '' }}" // Route Edit lama
-                :
-                "{{ route('admin.news.media.temp') }}"; // Route Temp baru
+                "{{ $isEdit ? route('admin.news.media.store', $item) : '' }}" :
+                "{{ route('news.media.temp') }}";
 
-            // Kita upload satu per satu agar progress bar lebih akurat per file
-            for (const file of validFiles) {
-                const formData = new FormData();
+            // 4. PROSES UPLOAD SEQUENTIAL (Satu per satu agar stabil)
+            try {
+                for (const [index, file] of validFiles.entries()) {
+                    const formData = new FormData();
+                    // Sesuaikan nama field dengan Controller
+                    const fieldName = IS_EDIT ? 'media_files[]' : 'file';
+                    formData.append(fieldName, file);
 
-                // Perhatikan nama field: controller temp pakai 'file', edit pakai 'media_files[]'
-                // Kita sesuaikan agar konsisten, saran saya ubah controller temp terima 'media_files[]' juga atau handle beda disini.
-                // Agar aman dengan kode controller baru di atas, temp pakai 'file' (single), edit pakai array.
+                    try {
+                        const res = await fetch(uploadUrl, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: formData
+                        });
 
-                if (IS_EDIT) {
-                    formData.append('media_files[]', file);
-                } else {
-                    formData.append('file', file);
-                }
+                        const json = await res.json();
+                        if (!json.ok) throw new Error(json.error || 'Gagal upload');
 
-                try {
-                    const res = await fetch(uploadUrl, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    });
-
-                    const json = await res.json();
-
-                    if (!json.ok) throw new Error(json.error || 'Gagal upload');
-
-                    // Handle Response
-                    if (IS_EDIT) {
-                        // Edit Mode mengembalikan array items
-                        (json.items || []).forEach(it => {
+                        // Render Hasil
+                        if (IS_EDIT) {
+                            (json.items || []).forEach(it => {
+                                mediaGrid.appendChild(buildCard({
+                                    id: it.id,
+                                    url: it.url,
+                                    type: it.type,
+                                    mime: it.mime
+                                }));
+                            });
+                        } else {
+                            const d = json.data;
                             mediaGrid.appendChild(buildCard({
-                                id: it.id,
-                                url: it.url,
-                                type: it.type,
-                                mime: it.mime
+                                id: null,
+                                url: d.url,
+                                type: d.type,
+                                mime: d.mime,
+                                tempPath: d.path
                             }));
-                        });
-                    } else {
-                        // Create Mode mengembalikan single data
-                        const d = json.data;
 
-                        // 1. Tampilkan Card Preview
-                        mediaGrid.appendChild(buildCard({
-                            id: null,
-                            url: d.url,
-                            type: d.type,
-                            mime: d.mime,
-                            tempPath: d.path
-                        }));
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'temp_files[]';
+                            input.value = JSON.stringify({
+                                path: d.path,
+                                type: d.type,
+                                mime: d.mime
+                            });
+                            tempFilesContainer.appendChild(input);
+                        }
 
-                        // 2. Buat Input Hidden agar terkirim saat Submit form utama
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'temp_files[]';
-                        // Kita kirim JSON string berisi path & metadata
-                        input.value = JSON.stringify({
-                            path: d.path,
-                            type: d.type,
-                            mime: d.mime
-                        });
-                        tempFilesContainer.appendChild(input);
+                    } catch (err) {
+                        console.error(err);
+                        alert(`Gagal upload ${file.name}: ${err.message}`);
                     }
 
-                } catch (err) {
-                    console.error(err);
-                    alert(`Gagal upload ${file.name}: ${err.message}`);
+                    // Update Progress per file
+                    completed++;
+                    const percent = Math.round((completed / total) * 100);
+
+                    // Animasi Smooth
+                    uploadBarFill.style.width = `${percent}%`;
+                    uploadPercent.textContent = `${percent}%`;
+                    uploadBarText.textContent = `Mengunggah ${completed}/${total} item...`;
                 }
+            } finally {
+                // 5. UNLOCK INTERFACE (Apapun yang terjadi, kembalikan state)
 
-                completed++;
-                const percent = Math.round((completed / total) * 100);
-                uploadBarFill.style.width = `${percent}%`;
-                uploadPercent.textContent = `${percent}%`;
+                // Pastikan bar penuh visual 100% sebelum hilang
+                uploadBarFill.style.width = '100%';
+                uploadPercent.textContent = '100%';
+                uploadBarText.textContent = 'Selesai!';
+
+                updateMediaCount();
+
+                // Delay sebentar agar user melihat "100%" & "Selesai"
+                setTimeout(() => {
+                    isUploading = false;
+                    mediaInput.value = ''; // Clear input fisik
+                    mediaInput.disabled = false; // Enable input
+
+                    dropzoneArea.classList.remove('cursor-not-allowed', 'opacity-70');
+                    loadingOverlay.classList.add('hidden');
+                    loadingOverlay.classList.remove('flex');
+
+                    // Sembunyikan bar perlahan
+                    uploadBar.classList.add('hidden');
+                }, 800); // Delay 0.8 detik
             }
-
-            updateMediaCount();
-            setTimeout(() => {
-                uploadBar.classList.add('hidden');
-                uploadBarFill.style.width = '0%';
-            }, 1000);
-
-            mediaInput.value = '';
         };
     </script>
 @endsection
