@@ -13,9 +13,13 @@ class NewsController extends Controller
     public function index(Request $r)
     {
         $q = $r->get('q');
-        $items = News::when($q, fn($qq) => $qq->where('title', 'like', "%$q%"))
+
+        // Tambahkan ->withCount('media') di sini
+        $items = News::withCount('media')
+            ->when($q, fn($qq) => $qq->where('title', 'like', "%$q%"))
             ->latest()
             ->paginate(10);
+
         return view('admin.news.index', compact('items', 'q'));
     }
 
