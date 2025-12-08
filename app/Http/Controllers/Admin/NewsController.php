@@ -33,7 +33,7 @@ class NewsController extends Controller
             'cover'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             // HANYA foto & video, tidak boleh PDF
             'media_files'   => 'nullable|array',
-            'media_files.*' => 'file|max:5120|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+            'media_files.*' => 'file|max:30720|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
         ]);
 
         $slug = Str::slug($data['title']) . '-' . Str::random(5);
@@ -97,7 +97,7 @@ class NewsController extends Controller
             'cover'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             // HANYA foto & video, tidak boleh PDF
             'media_files'   => 'nullable|array',
-            'media_files.*' => 'file|max:5120|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+            'media_files.*' => 'file|max:30720|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
             'delete_media_ids'   => 'array',
             'delete_media_ids.*' => 'integer',
         ]);
@@ -182,14 +182,14 @@ class NewsController extends Controller
             'media_files.*' => [
                 'required',
                 'file',
-                'max:5120',
+                'max:30720',
                 // HANYA foto & video
                 'mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
             ],
         ], [
             'media_files.required'    => 'Pilih minimal satu file.',
             'media_files.*.mimetypes' => 'Hanya gambar atau video yang diperbolehkan.',
-            'media_files.*.max'       => 'Ukuran file maksimal 5 MB.',
+            'media_files.*.max'       => 'Ukuran file maksimal 30 MB.',
         ]);
 
         $limit    = 10;

@@ -119,7 +119,7 @@
                                     <div class="text-sm font-medium text-slate-700">
                                         <span class="text-indigo-600">Klik untuk upload</span> atau drag and drop
                                     </div>
-                                    <p class="text-xs text-slate-500 mt-1">PNG, JPG, MP4 up to 5MB</p>
+                                    <p class="text-xs text-slate-500 mt-1">PNG, JPG, MP4 up to 30MB</p>
                                 </div>
                             </div>
 
@@ -321,6 +321,7 @@
     <script>
         // Konstanta
         const MAX_MEDIA = 10;
+        const MAX_SIZE_MB = 30;
         const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/quicktime',
             'video/webm'
         ];
@@ -400,11 +401,28 @@
 
             const IS_EDIT = {{ $isEdit ? 'true' : 'false' }};
 
-            // Validasi Mime & Count
-            const valid = files.filter(f => ALLOWED_MIME.includes(f.type));
-            if (files.length !== valid.length) alert(
-                'Beberapa file ditolak. Hanya gambar dan video yang diperbolehkan.');
+            // 1. Validasi Tipe File (MIME)
+            const validTypes = files.filter(f => ALLOWED_MIME.includes(f.type));
+            if (files.length !== validTypes.length) {
+                alert('Beberapa file ditolak. Hanya gambar dan video yang diperbolehkan.');
+            }
 
+            // 2. Validasi Ukuran File (SIZE CHECK) - BARU
+            const validSize = validTypes.filter(f => {
+                if (f.size > MAX_SIZE_BYTES) {
+                    alert(`File "${f.name}" terlalu besar! Maksimal ${MAX_SIZE_MB}MB.`);
+                    return false;
+                }
+                return true;
+            });
+
+            // Jika tidak ada file valid tersisa setelah filter size, stop.
+            if (validSize.length === 0) {
+                mediaInput.value = '';
+                return;
+            }
+
+            // 3. Validasi Jumlah (Count Limit)
             const currentCount = mediaGrid.querySelectorAll('[data-media-id], [data-temp]').length;
             const allowed = Math.max(0, MAX_MEDIA - currentCount);
 
@@ -414,20 +432,17 @@
                 return;
             }
 
-            const toUpload = valid.slice(0, allowed);
+            const toUpload = validSize.slice(0, allowed);
 
             // CREATE MODE: Client-side Preview only
             if (!IS_EDIT) {
-                // Populate fallback input for standard form submission
                 const dt = new DataTransfer();
-                // Ambil file yg sudah ada di fallback (jika user upload bertahap)
                 if (fallbackInput.files) {
                     Array.from(fallbackInput.files).forEach(f => dt.items.add(f));
                 }
                 toUpload.forEach(f => dt.items.add(f));
                 fallbackInput.files = dt.files;
 
-                // Show Preview
                 toUpload.forEach(f => {
                     const url = URL.createObjectURL(f);
                     const type = f.type.startsWith('image/') ? 'image' : 'video';
@@ -460,7 +475,17 @@
                     body: formData,
                 });
 
-                if (!res.ok) throw new Error('Gagal mengunggah.');
+                if (!res.ok) {
+                    // Coba ambil pesan error dari JSON jika ada
+                    let errorMsg = 'Gagal mengunggah.';
+                    try {
+                        const errJson = await res.json();
+                        if (errJson.message) errorMsg = errJson.message; // Error validasi Laravel
+                        if (errJson.error) errorMsg = errJson.error; // Error manual controller
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
                 const json = await res.json();
                 if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan.');
 
