@@ -316,9 +316,11 @@
             color: #4338ca !important;
         }
     </style>
+    <div id="tempFilesContainer"></div>
 
     {{-- SCRIPT MEDIA HANDLING (Sama, dengan sedikit penyesuaian UI) --}}
     <script>
+        const tempFilesContainer = document.getElementById('tempFilesContainer');
         // Konstanta
         const MAX_MEDIA = 10;
         const MAX_SIZE_MB = 30;
@@ -355,6 +357,7 @@
             const wrap = document.createElement('div');
             wrap.className =
                 'group relative aspect-square rounded-lg border border-slate-200 bg-slate-50 overflow-hidden animate-fade-in';
+            if (tempPath) wrap.dataset.tempPath = tempPath;
             if (id) wrap.dataset.mediaId = id;
             else wrap.dataset.temp = '1';
 
@@ -371,15 +374,34 @@
 
             inner += `
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
-                <button type="button" 
-                    onclick="${id ? `removeMediaItem(${id})` : `this.closest('[data-temp]').remove(); updateMediaCount();`}"
-                    class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100" title="Hapus">
-                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                </button>`;
+            <button type="button" 
+                onclick="removeTempOrPermanent(this, ${id})"
+                class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 hover:bg-rose-50 hover:text-rose-700 transition-all transform scale-90 group-hover:scale-100">
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+            </button>`;
 
             wrap.innerHTML = inner;
             return wrap;
         }
+
+        window.removeTempOrPermanent = function(btn, id) {
+            const card = btn.closest('div.group');
+
+            // Jika item permanen (Edit mode)
+            if (id) {
+                removeMediaItem(id); // Panggil fungsi lama
+                return;
+            }
+
+            // Jika item temp (Create mode)
+            if (card.dataset.tempPath) {
+                // Hapus input hidden yang sesuai
+                const input = document.querySelector(`input[value*="${card.dataset.tempPath}"]`);
+                if (input) input.remove();
+            }
+            card.remove();
+            updateMediaCount();
+        };
 
         // Remove Handler
         window.removeMediaItem = function(id) {
@@ -401,117 +423,129 @@
             if (!files.length) return;
 
             const IS_EDIT = {{ $isEdit ? 'true' : 'false' }};
+            const MAX_SIZE_MB = 30; // Batas 30MB
 
-            // 1. Validasi Tipe File (MIME)
-            const validTypes = files.filter(f => ALLOWED_MIME.includes(f.type));
-            if (files.length !== validTypes.length) {
-                alert('Beberapa file ditolak. Hanya gambar dan video yang diperbolehkan.');
-            }
-
-            // 2. Validasi Ukuran File (SIZE CHECK) - BARU
-            const validSize = validTypes.filter(f => {
-                if (f.size > MAX_SIZE_BYTES) {
-                    alert(`File "${f.name}" terlalu besar! Maksimal ${MAX_SIZE_MB}MB.`);
-                    return false;
+            // 1. Validasi Tipe & Size
+            const validFiles = [];
+            for (const f of files) {
+                if (!ALLOWED_MIME.includes(f.type)) {
+                    alert(`File ${f.name} ditolak. Format tidak sesuai.`);
+                    continue;
                 }
-                return true;
-            });
-
-            // Jika tidak ada file valid tersisa setelah filter size, stop.
-            if (validSize.length === 0) {
-                mediaInput.value = '';
-                return;
-            }
-
-            // 3. Validasi Jumlah (Count Limit)
-            const currentCount = mediaGrid.querySelectorAll('[data-media-id], [data-temp]').length;
-            const allowed = Math.max(0, MAX_MEDIA - currentCount);
-
-            if (allowed <= 0) {
-                alert('Batas maksimal 10 media tercapai.');
-                mediaInput.value = '';
-                return;
-            }
-
-            const toUpload = validSize.slice(0, allowed);
-
-            // CREATE MODE: Client-side Preview only
-            if (!IS_EDIT) {
-                const dt = new DataTransfer();
-                if (fallbackInput.files) {
-                    Array.from(fallbackInput.files).forEach(f => dt.items.add(f));
+                if (f.size > (MAX_SIZE_MB * 1024 * 1024)) {
+                    alert(`File ${f.name} terlalu besar (> ${MAX_SIZE_MB}MB).`);
+                    continue;
                 }
-                toUpload.forEach(f => dt.items.add(f));
-                fallbackInput.files = dt.files;
+                validFiles.push(f);
+            }
 
-                toUpload.forEach(f => {
-                    const url = URL.createObjectURL(f);
-                    const type = f.type.startsWith('image/') ? 'image' : 'video';
-                    mediaGrid.appendChild(buildCard({
-                        id: null,
-                        url,
-                        type,
-                        mime: f.type
-                    }));
-                });
-                updateMediaCount();
+            if (!validFiles.length) {
                 mediaInput.value = '';
                 return;
             }
 
-            // EDIT MODE: AJAX Upload
-            const formData = new FormData();
-            toUpload.forEach(f => formData.append('media_files[]', f));
+            // 2. Cek Limit Jumlah
+            const currentCount = mediaGrid.children.length;
+            if (currentCount + validFiles.length > MAX_MEDIA) {
+                alert('Melebihi batas maksimal 10 media.');
+                mediaInput.value = '';
+                return;
+            }
 
-            // UI Progress
+            // 3. PROSES UPLOAD (AJAX UNTUK KEDUANYA)
             uploadBar.classList.remove('hidden');
-            uploadBarFill.style.width = '10%';
+            uploadBarFill.style.width = '0%';
+            uploadBarText.textContent = 'Mengunggah media...';
 
-            try {
-                const res = await fetch("{{ $isEdit ? route('admin.news.media.store', $item) : '' }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData,
-                });
+            let completed = 0;
+            const total = validFiles.length;
+            const uploadUrl = IS_EDIT ?
+                "{{ $isEdit ? route('admin.news.media.store', $item) : '' }}" // Route Edit lama
+                :
+                "{{ route('admin.news.media.temp') }}"; // Route Temp baru
 
-                if (!res.ok) {
-                    // Coba ambil pesan error dari JSON jika ada
-                    let errorMsg = 'Gagal mengunggah.';
-                    try {
-                        const errJson = await res.json();
-                        if (errJson.message) errorMsg = errJson.message; // Error validasi Laravel
-                        if (errJson.error) errorMsg = errJson.error; // Error manual controller
-                    } catch (e) {}
-                    throw new Error(errorMsg);
+            // Kita upload satu per satu agar progress bar lebih akurat per file
+            for (const file of validFiles) {
+                const formData = new FormData();
+
+                // Perhatikan nama field: controller temp pakai 'file', edit pakai 'media_files[]'
+                // Kita sesuaikan agar konsisten, saran saya ubah controller temp terima 'media_files[]' juga atau handle beda disini.
+                // Agar aman dengan kode controller baru di atas, temp pakai 'file' (single), edit pakai array.
+
+                if (IS_EDIT) {
+                    formData.append('media_files[]', file);
+                } else {
+                    formData.append('file', file);
                 }
 
-                const json = await res.json();
-                if (!json.ok) throw new Error(json.error || 'Terjadi kesalahan.');
+                try {
+                    const res = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: formData
+                    });
 
-                // Append new items
-                (json.items || []).forEach(it => {
-                    mediaGrid.appendChild(buildCard({
-                        id: it.id,
-                        url: it.url,
-                        type: it.type,
-                        mime: it.mime
-                    }));
-                });
+                    const json = await res.json();
 
-                // Success UI
-                uploadBarFill.style.width = '100%';
-                uploadPercent.textContent = '100%';
-                updateMediaCount();
-                setTimeout(() => uploadBar.classList.add('hidden'), 1000);
+                    if (!json.ok) throw new Error(json.error || 'Gagal upload');
 
-            } catch (err) {
-                alert(err.message);
-                uploadBar.classList.add('hidden');
-            } finally {
-                mediaInput.value = '';
+                    // Handle Response
+                    if (IS_EDIT) {
+                        // Edit Mode mengembalikan array items
+                        (json.items || []).forEach(it => {
+                            mediaGrid.appendChild(buildCard({
+                                id: it.id,
+                                url: it.url,
+                                type: it.type,
+                                mime: it.mime
+                            }));
+                        });
+                    } else {
+                        // Create Mode mengembalikan single data
+                        const d = json.data;
+
+                        // 1. Tampilkan Card Preview
+                        mediaGrid.appendChild(buildCard({
+                            id: null,
+                            url: d.url,
+                            type: d.type,
+                            mime: d.mime,
+                            tempPath: d.path
+                        }));
+
+                        // 2. Buat Input Hidden agar terkirim saat Submit form utama
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'temp_files[]';
+                        // Kita kirim JSON string berisi path & metadata
+                        input.value = JSON.stringify({
+                            path: d.path,
+                            type: d.type,
+                            mime: d.mime
+                        });
+                        tempFilesContainer.appendChild(input);
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    alert(`Gagal upload ${file.name}: ${err.message}`);
+                }
+
+                completed++;
+                const percent = Math.round((completed / total) * 100);
+                uploadBarFill.style.width = `${percent}%`;
+                uploadPercent.textContent = `${percent}%`;
             }
+
+            updateMediaCount();
+            setTimeout(() => {
+                uploadBar.classList.add('hidden');
+                uploadBarFill.style.width = '0%';
+            }, 1000);
+
+            mediaInput.value = '';
         };
     </script>
 @endsection

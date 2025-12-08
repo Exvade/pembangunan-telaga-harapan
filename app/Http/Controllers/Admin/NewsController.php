@@ -26,19 +26,20 @@ class NewsController extends Controller
 
     public function store(Request $r)
     {
+        // 1. Validasi
         $data = $r->validate([
             'title'  => 'required|string|max:200',
             'body'   => 'required|string',
             'status' => 'required|in:draft,published',
             'cover'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            // HANYA foto & video, tidak boleh PDF
-            'media_files'   => 'nullable|array',
-            'media_files.*' => 'file|max:30720|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+            // Kita tidak butuh validasi media_files fisik lagi di sini jika pakai AJAX semua
+            'temp_files' => 'nullable|array',
         ]);
 
         $slug = Str::slug($data['title']) . '-' . Str::random(5);
         $coverPath = $r->file('cover')?->store('covers', 'public');
 
+        // 2. Buat Berita
         $news = News::create([
             'title'        => $data['title'],
             'slug'         => $slug,
@@ -47,39 +48,59 @@ class NewsController extends Controller
             'body'         => $data['body'],
             'status'       => $data['status'],
             'published_at' => $data['status'] === 'published' ? now() : null,
-            'author_id'    => auth()->id(),
+            'author_id'    => auth()->id(), // Pastikan ada auth
         ]);
 
-        // ========== Fallback non-AJAX: upload media saat create ==========
-        if ($r->hasFile('media_files')) {
-            $limit    = 10;
-            $existing = $news->media()->count();
-            $files    = $r->file('media_files');
+        // 3. PROSES FILE DARI TEMP (AJAX UPLOAD)
+        if ($r->has('temp_files')) {
+            foreach ($r->input('temp_files') as $jsonFile) {
+                $fileData = json_decode($jsonFile, true);
 
-            foreach ($files as $file) {
-                if (!$file) continue;
-                if ($existing >= $limit) break;
+                if (!$fileData || !Storage::disk('public')->exists($fileData['path'])) continue;
 
-                $mime = $file->getMimeType();
-                $type = str_starts_with($mime, 'image/') ? 'image' : (str_starts_with($mime, 'video/') ? 'video' : null);
-                if (!$type) continue; // jaga-jaga kalau bukan image/video
-
-                $stored = $file->store("news-media/{$news->id}", 'public');
+                // Pindahkan file dari temp ke folder berita
+                $newPath = "news-media/{$news->id}/" . basename($fileData['path']);
+                Storage::disk('public')->move($fileData['path'], $newPath);
 
                 $news->media()->create([
-                    'type'       => $type,
-                    'file_path'  => $stored,
-                    'mime_type'  => $mime,
-                    'caption'    => null,
-                    'credit'     => null,
+                    'type'       => $fileData['type'],
+                    'file_path'  => $newPath,
+                    'mime_type'  => $fileData['mime'],
                     'sort_order' => 0,
                 ]);
-
-                $existing++;
             }
         }
 
-        return redirect()->route('admin.news.index')->with('status', 'Berita ditambahkan.');
+        return redirect()->route('admin.news.index')->with('status', 'Berita berhasil diterbitkan.');
+    }
+
+    public function storeTempMedia(Request $r)
+    {
+        // Validasi 30MB
+        $r->validate([
+            'file' => 'required|file|max:30720|mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm',
+        ]);
+
+        if ($r->hasFile('file')) {
+            $file = $r->file('file');
+            $mime = $file->getMimeType();
+            $type = str_starts_with($mime, 'image/') ? 'image' : 'video';
+
+            // Simpan ke folder temp
+            $path = $file->store('temp', 'public');
+
+            return response()->json([
+                'ok' => true,
+                'data' => [
+                    'path' => $path, // Path sementara
+                    'url'  => asset('media/' . $path),
+                    'type' => $type,
+                    'mime' => $mime
+                ]
+            ]);
+        }
+
+        return response()->json(['ok' => false], 400);
     }
 
     public function edit(News $news)
