@@ -467,7 +467,7 @@
             const total = validFiles.length;
             const uploadUrl = IS_EDIT ?
                 "{{ $isEdit ? route('admin.news.media.store', $item) : '' }}" :
-                "{{ route('news.media.temp') }}";
+                "{{ route('admin.news.media.temp') }}";
 
             // 4. PROSES UPLOAD SEQUENTIAL (Satu per satu agar stabil)
             try {
