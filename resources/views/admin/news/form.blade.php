@@ -352,7 +352,8 @@
             id = null,
             url = '',
             type = 'image',
-            mime = ''
+            mime = '',
+            tempPath = null
         }) {
             const wrap = document.createElement('div');
             wrap.className =
