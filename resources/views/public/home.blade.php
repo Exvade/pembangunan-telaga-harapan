@@ -589,130 +589,304 @@
         </div>
     </section>
     {{-- SECTION SARAN WARGA --}}
-    <section id="saran" class="relative bg-white">
-        <div class="container mx-auto px-4 py-16 sm:py-20">
+    <section id="saran" x-data="{
+        imgModal: false,
+        imgSrc: '',
+        openModal(src) {
+            this.imgSrc = src;
+            this.imgModal = true;
+            document.body.classList.add('overflow-hidden'); // Matikan scroll body
+        },
+        closeModal() {
+            this.imgModal = false;
+            setTimeout(() => this.imgSrc = '', 300); // Reset src setelah animasi
+            document.body.classList.remove('overflow-hidden'); // Hidupkan scroll body
+        }
+    }" class="relative overflow-hidden bg-white py-16 sm:py-24">
 
-            <div class="max-w-3xl mx-auto text-center mb-10">
-                <span
-                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                    Aspirasi Warga
-                </span>
-                <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">
-                    Saran & Masukan
-                </h2>
-                <p class="mt-3 text-slate-600">
-                    Sampaikan saran, kritik, atau laporan Anda untuk kemajuan Telaga Harapan.
-                </p>
+        {{-- Background Decoration --}}
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-[40rem] h-[40rem] rounded-full bg-blue-50/50 blur-3xl -translate-y-1/2 translate-x-1/2">
             </div>
-
-            <div class="max-w-2xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-
-                @if (session('success'))
-                    <div id="success-alert"
-                        class="mb-4 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm font-semibold">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                <div id="form-alert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm font-semibold"></div>
-                <form id="suggestionForm" action="{{ route('suggestion.store') }}" method="POST"
-                    enctype="multipart/form-data" class="space-y-5">
-                    @csrf
-
-                    {{-- Nama --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">
-                            Nama (opsional)
-                        </label>
-                        <input type="text" name="name"
-                            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Nama Anda">
-                    </div>
-
-                    {{-- Pesan --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">
-                            Pesan / Saran <span class="text-red-500">*</span>
-                        </label>
-                        <textarea name="message" required rows="4"
-                            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-blue-500"
-                            placeholder="Tuliskan saran atau laporan Anda..."></textarea>
-                    </div>
-
-                    {{-- Upload Foto --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">
-                            Upload Foto (opsional)
-                        </label>
-                        <input type="file" name="photos[]" multiple
-                            class="w-full text-sm text-slate-600
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-lg file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-blue-100 file:text-blue-700
-                        hover:file:bg-blue-200">
-                        <p class="text-xs text-slate-500 mt-1">
-                            Maksimal 2MB per foto.
-                        </p>
-                    </div>
-
-                    {{-- Submit --}}
-                    <div class="pt-2">
-                        <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white transition"
-                            style="background:#2563eb; box-shadow:0 6px 16px -6px rgba(37,99,235,.4)">
-                            Kirim Saran
-                        </button>
-                    </div>
-
-                </form>
-
-
+            <div
+                class="absolute bottom-0 left-0 w-[30rem] h-[30rem] rounded-full bg-slate-50/80 blur-3xl translate-y-1/3 -translate-x-1/4">
             </div>
-            @if (isset($suggestions) && $suggestions->count())
-                <div class="max-w-3xl mx-auto mt-12 space-y-6">
-                    <h3 class="text-xl font-bold text-slate-800 text-center">
-                        Saran yang Telah Ditindaklanjuti
-                    </h3>
+        </div>
 
-                    @foreach ($suggestions as $item)
-                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                            <div class="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+
+                {{-- KOLOM KIRI (FORM INPUT) --}}
+                <div class="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24">
+                    <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 sm:p-8">
+                        <div class="mb-6">
+                            <span
+                                class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-600 mb-3 border border-blue-100">
+                                Aspirasi Warga
+                            </span>
+                            <h2 class="text-2xl font-extrabold tracking-tight text-slate-800">
+                                Suara Anda,<br>Semangat Kami.
+                            </h2>
+                            <p class="mt-2 text-sm text-slate-500 leading-relaxed">
+                                Kritik, saran, atau laporan Anda sangat berarti untuk pembangunan Telaga Harapan yang lebih
+                                baik.
+                            </p>
+                        </div>
+
+                        @if (session('success'))
+                            <div id="success-alert"
+                                class="mb-4 rounded-xl bg-emerald-50 text-emerald-700 px-4 py-3 text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                        clip-rule="evenodd" />
                                 </svg>
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        <div id="form-alert"
+                            class="hidden mb-4 rounded-xl px-4 py-3 text-sm font-semibold border flex items-center gap-2">
+                        </div>
 
-                                {{ $item->name ? $item->name : 'Anonim' }}
+                        <form id="suggestionForm" action="{{ route('suggestion.store') }}" method="POST"
+                            enctype="multipart/form-data" class="space-y-5">
+                            @csrf
+                            {{-- Nama --}}
+                            <div class="relative group">
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Nama
+                                    (Opsional)</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" name="name"
+                                        class="block w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400"
+                                        placeholder="Hamba Allah">
+                                </div>
                             </div>
 
-                            <p class="text-slate-700 whitespace-pre-line">
-                                {{ $item->message }}
-                            </p>
+                            {{-- Pesan --}}
+                            <div class="relative group">
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Pesan
+                                    <span class="text-red-500">*</span></label>
+                                <textarea name="message" required rows="4"
+                                    class="block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 resize-none"
+                                    placeholder="Tuliskan saran atau masukan Anda di sini..."></textarea>
+                            </div>
 
+                            {{-- Upload Foto --}}
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 ml-1">Lampiran
+                                    Foto (Opsional)</label>
+                                <label
+                                    class="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-6 h-6 mb-1 text-slate-400 group-hover:text-blue-500 transition-colors"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        <p class="text-xs text-slate-500 group-hover:text-blue-600"><span
+                                                class="font-semibold">Klik untuk upload</span></p>
+                                    </div>
+                                    <input type="file" name="photos[]" multiple class="hidden"
+                                        onchange="previewFiles(this)">
+                                </label>
+                                <div id="file-preview" class="mt-2 text-xs text-slate-500 truncate"></div>
+                            </div>
 
-                            @if ($item->photos)
-                                <div class="mt-3 flex gap-3 flex-wrap">
-                                    @foreach ($item->photos as $img)
-                                        <img src="{{ asset('uploads/suggestions/' . $img) }}"
-                                            class="w-24 h-24 object-cover rounded-lg border">
-                                    @endforeach
-                                </div>
-                            @endif
-                        </div>
-                    @endforeach
+                            {{-- Submit --}}
+                            <button type="submit"
+                                class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-white transition-all transform active:scale-[0.98] hover:shadow-lg hover:shadow-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700">
+                                <span>Kirim Masukan</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            @else
-                <p class="text-center text-slate-500 mt-10">
-                    Belum ada saran yang ditampilkan.
-                </p>
-            @endif
 
+                {{-- KOLOM KANAN (DAFTAR SARAN) --}}
+                <div class="lg:col-span-7 xl:col-span-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800">Tindak Lanjut</h3>
+                            <p class="text-sm text-slate-500">Aspirasi yang telah didengar dan direalisasikan.</p>
+                        </div>
+                        <div class="hidden sm:block h-px flex-1 bg-slate-100 ml-6"></div>
+                    </div>
+
+                    @if (isset($suggestions) && $suggestions->count())
+                        {{-- Masonry Layout --}}
+                        <div class="columns-1 md:columns-2 gap-6 space-y-6">
+                            @foreach ($suggestions as $item)
+                                <div
+                                    class="break-inside-avoid bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow duration-300">
+
+                                    {{-- Header Card --}}
+                                    <div class="flex items-start gap-3 mb-3">
+                                        {{-- Avatar --}}
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-600 flex items-center justify-center text-xs font-bold border border-white shadow-sm flex-shrink-0">
+                                            {{ substr($item->name ? $item->name : 'A', 0, 1) }}
+                                        </div>
+
+                                        {{-- Nama & Waktu --}}
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-bold text-slate-800 truncate">
+                                                {{ $item->name ? $item->name : 'Warga Telaga Harapan' }}</p>
+                                            <p class="text-[10px] text-slate-400">{{ $item->created_at->diffForHumans() }}
+                                            </p>
+                                        </div>
+
+                                        {{-- BADGE STATUS (Hanya Muncul Jika handled) --}}
+                                        <div class="ml-auto flex-shrink-0">
+                                            @if ($item->status == 'handled')
+                                                <span
+                                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
+                                                    <svg class="mr-1.5 w-3 h-3" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Ditindaklanjuti
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Pesan --}}
+                                    <div class="bg-slate-50/50 rounded-xl p-3 border border-slate-100/50">
+                                        <p class="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                                            "{{ $item->message }}"</p>
+                                    </div>
+
+                                    {{-- Foto Lampiran --}}
+                                    {{-- Di dalam @foreach ($suggestions as $item) --}}
+                                    @if ($item->photos)
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            @foreach ($item->photos as $img)
+                                                <div {{-- Panggil fungsi openModal --}}
+                                                    @click="openModal('{{ asset('uploads/suggestions/' . $img) }}')"
+                                                    class="group relative block overflow-hidden rounded-lg aspect-video cursor-zoom-in bg-slate-100">
+
+                                                    <img src="{{ asset('uploads/suggestions/' . $img) }}"
+                                                        class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
+
+                                                    {{-- Overlay Icon --}}
+                                                    <div
+                                                        class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                                                        <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7">
+                                                            </path>
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        {{-- Empty State --}}
+                        <div
+                            class="text-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50">
+                            <div
+                                class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">Belum Ada Masukan</h3>
+                            <p class="text-sm text-slate-500 max-w-sm mx-auto mt-2">Jadilah yang pertama memberikan saran
+                                untuk kemajuan lingkungan kita bersama.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
+
+        {{-- 
+        POPUP MODAL (TELEPORTED) 
+        x-teleport="body" akan memindahkan div ini ke bagian paling bawah <body>
+        saat dirender, sehingga lolos dari overflow-hidden section dan z-index aman.
+    --}}
+        <template x-teleport="body">
+            <div x-show="imgModal" style="display: none;" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm"
+                @keydown.escape.window="closeModal()">
+
+                {{-- Tombol Close --}}
+                <button @click="closeModal()"
+                    class="absolute top-4 right-4 text-white/70 hover:text-white transition-colors z-[10000] p-2 bg-white/10 rounded-full hover:bg-white/20">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+
+                {{-- Container Gambar --}}
+                <div @click.outside="closeModal()" class="relative w-full h-full flex items-center justify-center">
+                    <img :src="imgSrc" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+                </div>
+            </div>
+        </template>
     </section>
+
+    {{-- Script Tambahan untuk Preview Nama File saat Upload --}}
+    <script>
+        function previewFiles(input) {
+            const preview = document.getElementById('file-preview');
+            if (input.files && input.files.length > 0) {
+                preview.textContent = `${input.files.length} file dipilih`;
+            } else {
+                preview.textContent = '';
+            }
+        }
+    </script>
+
+    {{-- Script Tambahan untuk Preview File --}}
+    <script>
+        function previewFiles(input) {
+            const preview = document.getElementById('file-preview');
+            if (input.files && input.files.length > 0) {
+                preview.textContent = `${input.files.length} file dipilih`;
+            } else {
+                preview.textContent = '';
+            }
+        }
+    </script>
 
 
     <script>
+        function previewFiles(input) {
+            const preview = document.getElementById('file-preview');
+            if (input.files && input.files.length > 0) {
+                preview.textContent = `${input.files.length} file dipilih`;
+            } else {
+                preview.textContent = '';
+            }
+        }
         document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 

@@ -89,6 +89,10 @@
                                 class="{{ request()->routeIs('admin.expenses.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
                                 Pengeluaran
                             </a>
+                            <a href="{{ route('admin.suggestions.index') }}"
+                                class="{{ request()->routeIs('admin.suggestions.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                                Saran dan Masukan
+                            </a>
                         </div>
                     </div>
 
@@ -157,6 +161,10 @@
                     <a href="{{ route('admin.expenses.index') }}"
                         class="{{ request()->routeIs('admin.expenses.*') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50' }} block px-3 py-2 rounded-md text-base font-medium">
                         Pengeluaran
+                    </a>
+                    <a href="{{ route('admin.suggestions.index') }}"
+                        class="{{ request()->routeIs('admin.suggestions.*') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50' }} block px-3 py-2 rounded-md text-base font-medium">
+                        Saran dan Masukan
                     </a>
                 </div>
                 <div class="pt-4 pb-4 border-t border-slate-200 px-4">

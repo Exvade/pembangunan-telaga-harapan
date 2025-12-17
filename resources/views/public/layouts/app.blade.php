@@ -91,7 +91,7 @@
     {{-- Alpine.js state untuk menu mobile --}}
     <div x-data="{ mobileMenuOpen: false }">
         {{-- HEADER MODERN --}}
-        <header class="bg-white sticky top-0 z-50 border-b border-slate-200">
+        <header class="bg-white sticky top-0 z-40 border-b border-slate-200">
             <div class="container mx-auto px-4">
                 <div class="flex items-center justify-between h-16">
                     {{-- Logo / Nama Brand --}}

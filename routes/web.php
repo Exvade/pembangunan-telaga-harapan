@@ -34,27 +34,35 @@ Route::post('/saran', [SuggestionController::class, 'store'])->name('suggestion.
 Route::get('/saran-publik', [SuggestionController::class, 'publicIndex']);
 // GROUP ADMIN
 Route::middleware(['auth', 'role:admin'])
-
-    ->prefix('admin')->name('admin.')
+    ->prefix('admin')
+    ->name('admin.') // Prefix nama route jadi 'admin.'
     ->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('news', AdminNewsController::class)->except(['show']);
-        // AJAX: upload media langsung untuk sebuah berita
-        Route::post('news/{news}/media', [AdminNewsController::class, 'storeMedia'])
-            ->name('news.media.store')
-            ->middleware('auth');
-        Route::delete('news/{news}/media/{media}', [AdminNewsController::class, 'mediaDestroy'])
-            ->name('news.media.destroy');
-        Route::post('news/media/temp', [AdminNewsController::class, 'storeTempMedia'])
-            ->name('news.media.temp');
 
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Resource Routes (News, Category, Income, Expense)
+        Route::resource('news', AdminNewsController::class)->except(['show']);
         Route::resource('categories', AdminCategoryController::class)->except(['show']);
         Route::resource('incomes', AdminIncomeController::class)->except(['show']);
         Route::resource('expenses', AdminExpenseController::class)->except(['show']);
 
-        Route::get('/suggestions', [SuggestionAdminController::class, 'index']);
-        Route::post('/suggestions/{id}/publish', [SuggestionAdminController::class, 'togglePublish']);
-        Route::post('/suggestions/{id}/handled', [SuggestionAdminController::class, 'markHandled']);
+        // --- MEDIA UPLOAD (News) ---
+        Route::post('news/{news}/media', [AdminNewsController::class, 'storeMedia'])->name('news.media.store');
+        Route::delete('news/{news}/media/{media}', [AdminNewsController::class, 'mediaDestroy'])->name('news.media.destroy');
+        Route::post('news/media/temp', [AdminNewsController::class, 'storeTempMedia'])->name('news.media.temp');
+
+        // --- SUGGESTIONS (SARAN) ---
+        // 1. Halaman Index (Daftar Saran) -> INI YANG BIKIN ERROR SEBELUMNYA
+        Route::get('/suggestions', [SuggestionAdminController::class, 'index'])
+            ->name('suggestions.index');
+
+        // 2. Toggle Publish
+        Route::post('/suggestions/{id}/publish', [SuggestionAdminController::class, 'togglePublish'])
+            ->name('suggestions.publish');
+
+        // 3. Mark as Handled
+        Route::post('/suggestions/{id}/handled', [SuggestionAdminController::class, 'markHandled'])
+            ->name('suggestions.handled');
     });
 
 require __DIR__ . '/auth.php';
