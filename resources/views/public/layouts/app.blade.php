@@ -14,23 +14,26 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* ===== Pengaturan Warna Scrollbar ===== */
+        /* ===== Pengaturan Warna Scrollbar (Tema Navy) ===== */
         :root {
-            --brand: #298c47;
-            /* Warna utama untuk focus ring */
-            --sb-track-color: #E8F5EE;
-            /* Warna latar (track) scrollbar */
-            --sb-thumb-color: #7BD09B;
-            /* Warna gagang (thumb) scrollbar */
-            --sb-thumb-hover-color: #4FB976;
-            /* Warna gagang saat di-hover */
+            --brand: #0f3460;
+            /* Warna utama (Navy Gelap) untuk focus ring */
+
+            --sb-track-color: #e6eaf0;
+            /* Warna latar (track) - Putih kebiruan sangat muda */
+
+            --sb-thumb-color: #537895;
+            /* Warna gagang (thumb) - Biru Navy medium/pucat */
+
+            --sb-thumb-hover-color: #2c5270;
+            /* Warna gagang saat di-hover - Lebih gelap */
         }
 
-        /* Versi Dark Mode (jika ada) */
+        /* Versi Dark Mode */
         .dark {
-            --sb-track-color: rgba(41, 140, 71, .12);
-            --sb-thumb-color: rgba(123, 208, 155, .9);
-            --sb-thumb-hover-color: #3aa35c;
+            --sb-track-color: rgba(15, 52, 96, .12);
+            --sb-thumb-color: rgba(83, 120, 149, .9);
+            --sb-thumb-hover-color: #2c5270;
         }
 
         /* ===== Styling Scrollbar ===== */

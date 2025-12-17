@@ -588,8 +588,175 @@
             </div>
         </div>
     </section>
+    {{-- SECTION SARAN WARGA --}}
+    <section id="saran" class="relative bg-white">
+        <div class="container mx-auto px-4 py-16 sm:py-20">
+
+            <div class="max-w-3xl mx-auto text-center mb-10">
+                <span
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                    Aspirasi Warga
+                </span>
+                <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">
+                    Saran & Masukan
+                </h2>
+                <p class="mt-3 text-slate-600">
+                    Sampaikan saran, kritik, atau laporan Anda untuk kemajuan Telaga Harapan.
+                </p>
+            </div>
+
+            <div class="max-w-2xl mx-auto bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+
+                @if (session('success'))
+                    <div id="success-alert"
+                        class="mb-4 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm font-semibold">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                <div id="form-alert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm font-semibold"></div>
+                <form id="suggestionForm" action="{{ route('suggestion.store') }}" method="POST"
+                    enctype="multipart/form-data" class="space-y-5">
+                    @csrf
+
+                    {{-- Nama --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            Nama (opsional)
+                        </label>
+                        <input type="text" name="name"
+                            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nama Anda">
+                    </div>
+
+                    {{-- Pesan --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            Pesan / Saran <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="message" required rows="4"
+                            class="w-full rounded-lg border border-slate-300 px-4 py-2 focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Tuliskan saran atau laporan Anda..."></textarea>
+                    </div>
+
+                    {{-- Upload Foto --}}
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">
+                            Upload Foto (opsional)
+                        </label>
+                        <input type="file" name="photos[]" multiple
+                            class="w-full text-sm text-slate-600
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-blue-100 file:text-blue-700
+                        hover:file:bg-blue-200">
+                        <p class="text-xs text-slate-500 mt-1">
+                            Maksimal 2MB per foto.
+                        </p>
+                    </div>
+
+                    {{-- Submit --}}
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold text-white transition"
+                            style="background:#2563eb; box-shadow:0 6px 16px -6px rgba(37,99,235,.4)">
+                            Kirim Saran
+                        </button>
+                    </div>
+
+                </form>
+
+
+            </div>
+            @if (isset($suggestions) && $suggestions->count())
+                <div class="max-w-3xl mx-auto mt-12 space-y-6">
+                    <h3 class="text-xl font-bold text-slate-800 text-center">
+                        Saran yang Telah Ditindaklanjuti
+                    </h3>
+
+                    @foreach ($suggestions as $item)
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5.121 17.804A9 9 0 1118.88 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+
+                                {{ $item->name ? $item->name : 'Anonim' }}
+                            </div>
+
+                            <p class="text-slate-700 whitespace-pre-line">
+                                {{ $item->message }}
+                            </p>
+
+
+                            @if ($item->photos)
+                                <div class="mt-3 flex gap-3 flex-wrap">
+                                    @foreach ($item->photos as $img)
+                                        <img src="{{ asset('uploads/suggestions/' . $img) }}"
+                                            class="w-24 h-24 object-cover rounded-lg border">
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-center text-slate-500 mt-10">
+                    Belum ada saran yang ditampilkan.
+                </p>
+            @endif
+
+        </div>
+    </section>
+
 
     <script>
+        document.getElementById('suggestionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const alertBox = document.getElementById('form-alert');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Mengirim...';
+
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alertBox.className =
+                        'mb-4 rounded-lg bg-green-100 text-green-800 px-4 py-3 text-sm font-semibold';
+                    alertBox.innerText = data.message;
+                    alertBox.classList.remove('hidden');
+
+                    form.reset();
+                    setTimeout(() => {
+                        alertBox.classList.add('hidden');
+                    }, 3000);
+                }
+            } catch (err) {
+                alertBox.className = 'mb-4 rounded-lg bg-red-100 text-red-800 px-4 py-3 text-sm font-semibold';
+                alertBox.innerText = 'Terjadi kesalahan. Silakan coba lagi.';
+                alertBox.classList.remove('hidden');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Kirim Saran';
+        });
+
         function donasiCard() {
             return {
                 tab: 'transfer',

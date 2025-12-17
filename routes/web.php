@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\IncomeController as AdminIncomeController;
 use App\Http\Controllers\Admin\ExpenseController as AdminExpenseController;
 use App\Http\Controllers\Public\SiteController;
 use App\Http\Controllers\Public\NewsController as PublicNewsController;
+use App\Http\Controllers\Admin\SuggestionController as SuggestionAdminController;
+use App\Http\Controllers\Public\SuggestionController;
+
 
 
 
@@ -26,6 +29,9 @@ Route::view('/tentang', 'public.about')->name('public.about');
 
 // Auth routes dari Breeze sudah otomatis tersedia (login, logout, dll)
 Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'))->name('dashboard');
+
+Route::post('/saran', [SuggestionController::class, 'store'])->name('suggestion.store');
+Route::get('/saran-publik', [SuggestionController::class, 'publicIndex']);
 // GROUP ADMIN
 Route::middleware(['auth', 'role:admin'])
 
@@ -45,6 +51,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('categories', AdminCategoryController::class)->except(['show']);
         Route::resource('incomes', AdminIncomeController::class)->except(['show']);
         Route::resource('expenses', AdminExpenseController::class)->except(['show']);
+
+        Route::get('/suggestions', [SuggestionAdminController::class, 'index']);
+        Route::post('/suggestions/{id}/publish', [SuggestionAdminController::class, 'togglePublish']);
+        Route::post('/suggestions/{id}/handled', [SuggestionAdminController::class, 'markHandled']);
     });
 
 require __DIR__ . '/auth.php';
