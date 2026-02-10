@@ -50,7 +50,7 @@
                         </p>
                     </div>
 
-                    {{-- PERBAIKAN 2: Gambar Sampul Utama --}}
+                    {{-- Gambar Sampul Utama --}}
                     @if ($item->cover_path)
                         <img src="{{ asset('media/' . $item->cover_path) }}"
                             class="rounded-2xl shadow-lg mt-8 mb-8 w-full aspect-video object-cover"
