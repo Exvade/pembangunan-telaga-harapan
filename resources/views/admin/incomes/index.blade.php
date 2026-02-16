@@ -100,7 +100,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @if ($it->attachment_path)
                                         <button type="button"
-                                            @click="modalOpen = true; modalContentUrl = '{{ Storage::url($it->attachment_path) }}'"
+                                            @click="modalOpen = true; modalContentUrl = '{{ asset('media/' . $it->attachment_path) }}'"
                                             class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors border border-slate-200 shadow-sm"
                                             title="Lihat Bukti Foto">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -110,6 +110,7 @@
                                             </svg>
                                         </button>
                                     @else
+                                        {{-- UX: Ikon abu-abu halus jika foto tidak ada --}}
                                         <div class="flex justify-center" title="Tidak ada bukti">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-200"
                                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
