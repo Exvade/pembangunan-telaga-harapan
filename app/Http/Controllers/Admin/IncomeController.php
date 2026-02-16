@@ -37,7 +37,7 @@ class IncomeController extends Controller
             'date'        => 'required|date|before_or_equal:today',
             'source'      => 'nullable|string|max:150',
             'amount'      => 'required|integer|min:0',
-            'attachment'  => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:2048',
+            'attachment'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'notes'       => 'nullable|string|max:255',
         ]);
 
@@ -62,7 +62,7 @@ class IncomeController extends Controller
             'date'        => 'required|date|before_or_equal:today',
             'source'      => 'nullable|string|max:150',
             'amount'      => 'required|integer|min:0',
-            'attachment'  => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf|max:2048',
+            'attachment'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'notes'       => 'nullable|string|max:255',
         ]);
 
