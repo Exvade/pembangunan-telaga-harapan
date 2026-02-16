@@ -2,9 +2,8 @@
 
 @section('content')
     {{-- Container Utama dengan Alpine Data untuk Modal --}}
-    <div x-data="{ modalOpen: false, modalContentUrl: '' }" @keydown.escape.window="modalOpen = false">
+    <div x-data="{ modalOpen: false, modalContentUrl: '' }" @keydown.escape.window="modalOpen = false" x-cloak>
 
-        <!-- Header Section -->
         <div class="sm:flex sm:items-center sm:justify-between mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Data Pemasukan</h1>
@@ -23,7 +22,6 @@
             </div>
         </div>
 
-        <!-- Filter Section (Diperbaiki Layoutnya) -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6">
             <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Filter Periode</h2>
             <form method="GET" class="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -50,7 +48,6 @@
             </form>
         </div>
 
-        <!-- Content Table -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200">
@@ -75,11 +72,6 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-slate-200">
                         @forelse($items as $it)
-                            @php
-                                $isAttachmentImage =
-                                    $it->attachment_mime_type &&
-                                    \Illuminate\Support\Str::contains($it->attachment_mime_type, 'image');
-                            @endphp
                             <tr class="hover:bg-slate-50 transition-colors group">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -107,30 +99,24 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @if ($it->attachment_path)
-                                        @if ($isAttachmentImage)
-                                            <button type="button"
-                                                @click="modalOpen = true; modalContentUrl = '{{ Storage::url($it->attachment_path) }}'"
-                                                class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors border border-slate-200"
-                                                title="Lihat Foto">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            </button>
-                                        @else
-                                            <a href="{{ Storage::url($it->attachment_path) }}" target="_blank"
-                                                class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors border border-slate-200"
-                                                title="Unduh File">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                            </a>
-                                        @endif
+                                        <button type="button"
+                                            @click="modalOpen = true; modalContentUrl = '{{ Storage::url($it->attachment_path) }}'"
+                                            class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors border border-slate-200 shadow-sm"
+                                            title="Lihat Bukti Foto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </button>
                                     @else
-                                        <span class="text-xs text-slate-400 italic">Nil</span>
+                                        <div class="flex justify-center" title="Tidak ada bukti">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-200"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -185,7 +171,6 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             @if ($items->hasPages())
                 <div class="px-6 py-4 bg-white border-t border-slate-200">
                     {{ $items->links() }}
