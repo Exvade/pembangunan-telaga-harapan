@@ -169,16 +169,16 @@
                         </div>
 
                         {{-- Hidden Input --}}
-                        <input type="file" name="attachment" class="hidden" x-ref="attachmentInput"
-                            accept="image/*    
-                        @change=" const file=$event.target.files[0];
-                            if(file) { fileName=file.name; isImage=file.type.startsWith('image/'); if(isImage){ const
-                            reader=new FileReader(); reader.onload=(e)=> { filePreview = e.target.result };
-                        reader.readAsDataURL(file);
-                        } else {
-                        filePreview = 'true'; // trigger non-image view
-                        }
-                        }
+                        <input type="file" name="attachment" class="hidden" x-ref="attachmentInput"accept="image/*"
+                            @change="
+                            const file = $event.target.files[0];
+                            if (file) {
+                                fileName = file.name;
+                                isImage = true; // Karena sudah difilter accept='image/*'
+                                const reader = new FileReader();
+                                reader.onload = (e) => { filePreview = e.target.result };
+                                reader.readAsDataURL(file);
+                            }
                         ">
 
                         @if ($item->attachment_path)
