@@ -2,8 +2,8 @@
 @section('title', 'Transparansi: ' . $category->name . ' — Telaga Harapan')
 
 @section('content')
-    {{-- State Alpine.js untuk Modal --}}
-    <div x-data="{ modalOpen: false, modalContentUrl: '', isModalContentImage: false }" @keydown.escape.window="modalOpen = false">
+    {{-- State Alpine.js untuk Modal (Disederhanakan khusus Gambar) --}}
+    <div x-data="{ modalOpen: false, modalContentUrl: '' }" @keydown.escape.window="modalOpen = false" x-cloak>
 
         {{-- 1. HERO SECTION --}}
         <section class="bg-blue-800 text-white">
@@ -74,16 +74,12 @@
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200">
                             <ul class="divide-y divide-slate-100">
                                 @forelse($expenses as $e)
-                                    @php
-                                        $isAttachmentImage = $e->attachment_mime_type
-                                            ? \Illuminate\Support\Str::contains($e->attachment_mime_type, 'image')
-                                            : false;
-                                    @endphp
                                     <li
                                         class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                         <div>
                                             <p class="text-xs text-slate-500">
-                                                {{ \Illuminate\Support\Carbon::parse($e->date)->format('d F Y') }}</p>
+                                                {{ \Illuminate\Support\Carbon::parse($e->date)->translatedFormat('d F Y') }}
+                                            </p>
                                             <p class="font-medium text-slate-800 mt-1">{{ $e->description }}</p>
                                             @if ($e->unit_label)
                                                 <p class="text-xs text-slate-500 mt-1">({{ $e->unit_label }})</p>
@@ -91,11 +87,13 @@
                                         </div>
                                         <div class="flex items-center gap-4 flex-shrink-0">
                                             <p class="font-semibold text-rose-600">Rp
-                                                {{ number_format($e->amount, 0, ',', '.') }}</p>
+                                                {{ number_format($e->amount, 0, ',', '.') }}
+                                            </p>
                                             @if ($e->attachment_path)
-                                                <button type="button" title="Lihat Bukti"
-                                                    @click="modalOpen = true; modalContentUrl = '{{ Storage::url($e->attachment_path) }}'; isModalContentImage = {{ $isAttachmentImage ? 'true' : 'false' }}"
-                                                    class="inline-flex p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-indigo-600">
+                                                {{-- Button khusus memicu modal dengan path /media --}}
+                                                <button type="button" title="Lihat Bukti Foto"
+                                                    @click="modalOpen = true; modalContentUrl = '{{ asset('media/' . $e->attachment_path) }}'"
+                                                    class="inline-flex p-2 rounded-full text-slate-500 hover:bg-slate-100 hover:text-indigo-600 transition-colors">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
                                                         viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
@@ -123,33 +121,19 @@
             </div>
         </div>
 
-        {{-- Komponen Modal --}}
+        {{-- Komponen Modal (Hanya Gambar) --}}
         <div x-show="modalOpen" x-cloak x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
             x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/75 p-4" @click="modalOpen = false">
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4"
+            @click="modalOpen = false">
 
-            <template x-if="isModalContentImage">
-                <div @click.stop class="relative">
-                    <img :src="modalContentUrl" class="block max-w-xl max-h-[75vh] rounded-lg shadow-2xl"
-                        alt="Preview Bukti">
-                    <button @click="modalOpen = false"
-                        class="absolute -top-2 -right-2 z-20 p-1.5 rounded-full bg-slate-700 text-white hover:bg-slate-800 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </template>
-
-            <template x-if="!isModalContentImage && modalOpen">
-                <div @click.stop class="relative w-full max-w-4xl h-[90vh] bg-white rounded-lg shadow-xl overflow-hidden">
-                    <iframe :src="modalContentUrl" class="w-full h-full" frameborder="0"></iframe>
-                    <button @click="modalOpen = false"
-                        class="absolute top-2 right-2 z-20 p-2 rounded-full bg-black/20 text-white hover:bg-black/50">
+            <div @click.stop
+                class="relative bg-white rounded-xl shadow-2xl overflow-hidden max-w-2xl w-full flex flex-col max-h-[90vh]">
+                <div class="flex items-center justify-between p-4 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800">Bukti Pengeluaran</h3>
+                    <button @click="modalOpen = false" class="text-slate-400 hover:text-rose-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -157,7 +141,17 @@
                         </svg>
                     </button>
                 </div>
-            </template>
+                <div class="p-2 bg-slate-50 flex-grow overflow-auto flex items-center justify-center">
+                    <img :src="modalContentUrl" class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm"
+                        alt="Preview Bukti">
+                </div>
+                <div class="p-4 border-t border-slate-100 bg-white flex justify-end">
+                    <a :href="modalContentUrl" target="_blank"
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors shadow-sm">
+                        Buka Gambar Asli
+                    </a>
+                </div>
+            </div>
         </div>
 
     </div>

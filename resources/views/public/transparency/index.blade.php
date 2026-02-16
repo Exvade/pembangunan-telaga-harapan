@@ -2,9 +2,10 @@
 @section('title', 'Transparansi Dana — Telaga Harapan')
 
 @section('content')
-    <div x-data="{ modalOpen: false, modalContentUrl: '', isModalContentImage: false }" @keydown.escape.window="modalOpen = false" class="bg-slate-50 min-h-screen pb-12">
+    {{-- Inisialisasi Alpine: isModalContentImage langsung true karena hanya gambar --}}
+    <div x-data="{ modalOpen: false, modalContentUrl: '' }" @keydown.escape.window="modalOpen = false" class="bg-slate-50 min-h-screen pb-12">
 
-        {{-- 1. HEADER SEDERHANA (Tanpa Background Aneh-aneh) --}}
+        {{-- 1. HEADER --}}
         <div class="bg-white border-b border-slate-200 shadow-sm">
             <div class="container mx-auto px-4 py-8 sm:py-12">
                 <div class="max-w-3xl">
@@ -25,7 +26,7 @@
 
         <div class="container mx-auto px-4 -mt-0 pt-8">
 
-            {{-- 2. GRID STATISTIK (Kotak Tegas & Jelas) --}}
+            {{-- 2. GRID STATISTIK --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 {{-- Pemasukan --}}
                 <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-full">
@@ -43,9 +44,7 @@
                             Rp {{ number_format($global['total_income'], 0, ',', '.') }}
                         </p>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
-                        Akumulasi dana masuk
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">Akumulasi dana masuk</div>
                 </div>
 
                 {{-- Pengeluaran --}}
@@ -64,12 +63,10 @@
                             Rp {{ number_format($global['total_expense'], 0, ',', '.') }}
                         </p>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">
-                        Dana yang telah digunakan
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500">Dana yang telah digunakan</div>
                 </div>
 
-                {{-- Saldo (Warna Biru) --}}
+                {{-- Saldo --}}
                 <div
                     class="bg-blue-600 p-6 rounded-xl border border-blue-500 shadow-lg text-white flex flex-col justify-between h-full">
                     <div>
@@ -87,13 +84,11 @@
                             Rp {{ number_format($global['balance'], 0, ',', '.') }}
                         </p>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-blue-500 text-xs text-blue-100">
-                        Dana tersedia saat ini
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-blue-500 text-xs text-blue-100">Dana tersedia saat ini</div>
                 </div>
             </div>
 
-            {{-- 3. LAYOUT UTAMA (2 Kolom Standar) --}}
+            {{-- 3. LAYOUT UTAMA --}}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 {{-- KOLOM KIRI: LIST PEMASUKAN --}}
@@ -106,11 +101,6 @@
 
                         <div class="divide-y divide-slate-100">
                             @forelse($recentIncomes as $inc)
-                                @php
-                                    $isAttachmentImage = $inc->attachment_path
-                                        ? \Illuminate\Support\Str::contains($inc->attachment_mime_type, 'image')
-                                        : false;
-                                @endphp
                                 <div class="p-4 hover:bg-slate-50 transition-colors">
                                     <div class="flex justify-between items-start mb-1">
                                         <span class="text-xs font-semibold text-slate-500">
@@ -125,8 +115,9 @@
                                     </p>
 
                                     @if ($inc->attachment_path)
+                                        {{-- Popup menggunakan asset('media/...') --}}
                                         <button type="button"
-                                            @click="modalOpen = true; modalContentUrl = '{{ Storage::url($inc->attachment_path) }}'; isModalContentImage = {{ $isAttachmentImage ? 'true' : 'false' }}"
+                                            @click="modalOpen = true; modalContentUrl = '{{ asset('media/' . $inc->attachment_path) }}'"
                                             class="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"
                                                 fill="currentColor">
@@ -149,7 +140,6 @@
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h3 class="font-bold text-slate-800 text-lg mb-6">Realisasi Anggaran per Kategori</h3>
-
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @forelse($categories as $c)
                                 <a href="{{ route('public.category.show', $c['id']) }}"
@@ -166,14 +156,12 @@
                                                 d="M9 5l7 7-7 7" />
                                         </svg>
                                     </div>
-
                                     <p class="text-sm text-slate-500 mb-4 line-clamp-2 min-h-[2.5em]">
                                         {{ $c['description'] ?: 'Tidak ada deskripsi detail.' }}
                                     </p>
-
                                     <div class="space-y-2">
                                         <div class="flex justify-between items-end">
-                                            <span class="text-xs text-slate-500">Terkewat</span>
+                                            <span class="text-xs text-slate-500">Terpakai</span>
                                             <span class="text-lg font-bold text-rose-600">
                                                 Rp {{ number_format($c['total_expense'], 0, ',', '.') }}
                                             </span>
@@ -182,25 +170,23 @@
                                             <div class="bg-blue-600 h-2 rounded-full"
                                                 style="width: {{ $c['share_pct'] }}%"></div>
                                         </div>
-                                        <div class="text-right text-xs text-slate-400">
-                                            {{ $c['share_pct'] }}% dari total pengeluaran
-                                        </div>
+                                        <div class="text-right text-xs text-slate-400">{{ $c['share_pct'] }}% dari
+                                            pengeluaran</div>
                                     </div>
                                 </a>
                             @empty
                                 <div
                                     class="col-span-full py-12 text-center text-slate-400 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-                                    Belum ada kategori rencana.
+                                    Belum ada kategori.
                                 </div>
                             @endforelse
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
-        {{-- MODAL PREVIEW (Simpel & Fungsional) --}}
+        {{-- MODAL PREVIEW (Hanya Gambar) --}}
         <div x-show="modalOpen" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300"
             x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0"
@@ -220,18 +206,15 @@
                 </div>
 
                 <div class="flex-1 bg-slate-100 overflow-auto flex items-center justify-center p-4">
-                    <template x-if="isModalContentImage">
-                        <img :src="modalContentUrl" class="max-w-full max-h-full object-contain shadow-sm rounded">
-                    </template>
-                    <template x-if="!isModalContentImage">
-                        <iframe :src="modalContentUrl" class="w-full h-full min-h-[500px] border-0 bg-white"></iframe>
-                    </template>
+                    {{-- Langsung tampilkan img karena sistem sudah khusus gambar --}}
+                    <img :src="modalContentUrl" class="max-w-full max-h-full object-contain shadow-sm rounded"
+                        alt="Bukti Transaksi">
                 </div>
 
                 <div class="p-4 border-t border-slate-100 bg-white flex justify-end">
                     <a :href="modalContentUrl" target="_blank"
                         class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 transition-colors">
-                        Download / Buka Asli
+                        Lihat Gambar Asli
                     </a>
                 </div>
             </div>
