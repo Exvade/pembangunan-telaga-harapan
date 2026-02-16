@@ -183,7 +183,8 @@
 
                         @if ($item->attachment_path)
                             <div class="mt-3 text-center">
-                                <a href="{{ Storage::url($item->attachment_path) }}" target="_blank"
+                                {{-- Menggunakan asset('media/...') agar sesuai dengan setup path Anda --}}
+                                <a href="{{ asset('media/' . $item->attachment_path) }}" target="_blank"
                                     class="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline flex items-center justify-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"
                                         fill="currentColor">
