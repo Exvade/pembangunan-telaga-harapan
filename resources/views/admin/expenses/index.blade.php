@@ -139,25 +139,24 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @if ($it->attachment_path)
                                         <button type="button"
-                                            @click="modalOpen = true; modalContentUrl = '{{ Storage::url($it->attachment_path) }}'; isModalContentImage = {{ $isAttachmentImage ? 'true' : 'false' }}"
+                                            @click="modalOpen = true; modalContentUrl = '{{ asset('media/' . $it->attachment_path) }}'"
                                             class="inline-flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors border border-slate-200"
-                                            title="Lihat Bukti">
-                                            @if ($isAttachmentImage)
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            @else
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
-                                            @endif
+                                            title="Lihat Bukti Foto">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
                                         </button>
                                     @else
-                                        <span class="text-xs text-slate-400 italic text-opacity-50">—</span>
+                                        {{-- Ikon jika tidak ada foto --}}
+                                        <div class="flex justify-center" title="Tidak ada bukti">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-200"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -242,25 +241,13 @@
                     </button>
                 </div>
                 <div class="p-4 bg-slate-50 flex-grow overflow-auto flex items-center justify-center">
-                    <template x-if="isModalContentImage">
-                        <img :src="modalContentUrl"
-                            class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm bg-white"
-                            alt="Preview Bukti">
-                    </template>
-                    <template x-if="!isModalContentImage">
-                        <iframe :src="modalContentUrl" class="w-full h-full min-h-[60vh] border rounded-lg bg-white"
-                            frameborder="0"></iframe>
-                    </template>
+                    {{-- Langsung tampilkan IMG tanpa template x-if lagi --}}
+                    <img :src="modalContentUrl"
+                        class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-sm bg-white" alt="Preview Bukti">
                 </div>
-                {{-- Footer Modal (Download Button) --}}
                 <div class="p-4 border-t border-slate-100 bg-white flex justify-end">
-                    <a :href="modalContentUrl" target="_blank" download
+                    <a :href="modalContentUrl" target="_blank"
                         class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
                         Buka Original / Download
                     </a>
                 </div>

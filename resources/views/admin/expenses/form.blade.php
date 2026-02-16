@@ -150,19 +150,17 @@
 
                 {{-- Card: Attachment --}}
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden" x-data="{
-                    filePreview: '{{ $item->attachment_path ? Storage::url($item->attachment_path) : '' }}',
-                    isImage: {{ $item->attachment_mime_type && \Illuminate\Support\Str::contains($item->attachment_mime_type, 'image') ? 'true' : 'false' }},
+                    filePreview: '{{ $item->attachment_path ? asset('media/' . $item->attachment_path) : '' }}',
                     fileName: ''
                 }">
                     <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
                         <h2 class="text-sm font-semibold text-slate-800">Bukti Pengeluaran</h2>
                     </div>
                     <div class="p-6">
-
                         <div @click="$refs.attachmentInput.click()"
                             class="group relative w-full aspect-[4/3] rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 hover:border-rose-400 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden">
 
-                            {{-- Placeholder --}}
+                            {{-- Placeholder jika tidak ada file --}}
                             <div x-show="!filePreview" class="text-center p-4">
                                 <svg class="mx-auto h-10 w-10 text-slate-400 group-hover:text-rose-500 transition-colors"
                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,57 +168,38 @@
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <p class="mt-2 text-xs font-medium text-slate-600">Upload Nota/Struk</p>
-                                <p class="text-[10px] text-slate-400 mt-1">Gambar/PDF (Max 2MB)</p>
+                                <p class="text-[10px] text-slate-400 mt-1">Format: JPG, PNG, WEBP (Max 2MB)</p>
                             </div>
 
-                            {{-- Image Preview --}}
-                            <template x-if="filePreview && isImage">
+                            {{-- Preview Gambar --}}
+                            <template x-if="filePreview">
                                 <img :src="filePreview" class="absolute inset-0 w-full h-full object-contain bg-white">
                             </template>
 
-                            {{-- File Icon Preview --}}
-                            <template x-if="filePreview && !isImage">
-                                <div
-                                    class="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-white p-4">
-                                    <svg class="h-12 w-12 text-rose-500 mb-2" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    <p class="text-xs text-center text-slate-600 font-medium truncate w-full"
-                                        x-text="fileName || 'File Terlampir'"></p>
-                                </div>
-                            </template>
-
-                            {{-- Overlay on Hover --}}
+                            {{-- Overlay saat hover --}}
                             <div x-show="filePreview"
                                 class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                                 <span
-                                    class="opacity-0 group-hover:opacity-100 bg-white/90 text-slate-700 text-xs font-semibold px-2 py-1 rounded shadow-sm transition-opacity">Ganti
-                                    File</span>
+                                    class="opacity-0 group-hover:opacity-100 bg-white/90 text-slate-700 text-xs font-semibold px-2 py-1 rounded shadow-sm">Ganti
+                                    Gambar</span>
                             </div>
                         </div>
 
-                        {{-- Hidden Input --}}
-                        <input type="file" name="attachment" class="hidden" x-ref="attachmentInput"
+                        {{-- Input File Tersembunyi dengan filter accept --}}
+                        <input type="file" name="attachment" class="hidden" x-ref="attachmentInput" accept="image/*"
                             @change="
-                                   const file = $event.target.files[0]; 
-                                   if(file) { 
-                                       fileName = file.name;
-                                       isImage = file.type.startsWith('image/'); 
-                                       if(isImage){
-                                           const reader = new FileReader(); 
-                                           reader.onload = (e) => { filePreview = e.target.result }; 
-                                           reader.readAsDataURL(file);
-                                       } else {
-                                           filePreview = 'true'; // trigger non-image view
-                                       }
-                                   }
-                               ">
+            const file = $event.target.files[0]; 
+            if(file) { 
+                fileName = file.name;
+                const reader = new FileReader(); 
+                reader.onload = (e) => { filePreview = e.target.result }; 
+                reader.readAsDataURL(file);
+            }
+        ">
 
                         @if ($item->attachment_path)
                             <div class="mt-3 text-center">
-                                <a href="{{ Storage::url($item->attachment_path) }}" target="_blank"
+                                <a href="{{ asset('media/' . $item->attachment_path) }}" target="_blank"
                                     class="text-xs text-rose-600 hover:text-rose-800 font-medium underline flex items-center justify-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20"
                                         fill="currentColor">
@@ -233,9 +212,6 @@
                                 </a>
                             </div>
                         @endif
-                        @error('attachment')
-                            <p class="mt-2 text-xs text-center text-rose-600">{{ $message }}</p>
-                        @enderror
                     </div>
                 </div>
 
